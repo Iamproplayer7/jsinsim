@@ -67,7 +67,7 @@ class ServerHandler {
                 prefix: host.prefix.charCodeAt(0),
                 interval: 1000/host.pps,
                 admin: host.admin,
-                iname: 'InSim Version: 9',
+                iname: '9',
                 insimver: 9
             });
 
@@ -99,8 +99,7 @@ class ServerHandler {
             var size = this.peekByte(host);
             while ((host.buffer.length > 0) && (size <= host.buffer.length)){
                 if(size > 0) {
-                    const p = host.buffer.take(size);
-                    this.decodePacket(host, p);
+                    this.decodePacket(host, host.buffer.take(size));
                     host.buffer.advance(size); 
                 }
 
@@ -157,10 +156,10 @@ class ServerHandler {
             return console.log('[packet] not decoded! (ID: ' + packetId + ')');
         }
 
-        // if host response it means it's connected
+        // if host response it means host is connected
         if(!host.connected) {
             host.connected = true;
-            console.log('[' + host.name + '] connected.')
+            console.log('[' + host.name + '] Connected.')
         }
 
         // decode packet
@@ -176,9 +175,77 @@ class ServerHandler {
                     }
                 }
             }
+
+            // fire packet handler
+            Packets.fire(packetName, packetDecoded);
         }
     }
 }
 const Server = new ServerHandler;
 
-module.exports = Server;
+class PacketsHandler {
+    constructor() {
+        this.packets = [];
+    }
+
+    on(name, callback) {
+        if(Array.isArray(name)) {
+            for(const name_ of name) {
+                this.packets.push({ name: name_, callback: callback });
+            }
+        }
+        else {
+            this.packets.push({ name: name, callback: callback });
+        }
+    }
+
+    fire(name, data) {
+        for(const packet of this.packets) {
+            if(packet.name == name) {
+                packet.callback(data);
+            }
+        }
+    }
+
+    send(hostName, name, data) {
+        const host = Server.hosts[hostName]; if(host === undefined) return;
+        Server.sendPacket(host, name, data);
+    }
+}
+const Packets = new PacketsHandler;
+
+class EventsHandler {
+    constructor() {
+        this.events = [];
+    }
+
+    on(name, callback) {
+        if(Array.isArray(name)) {
+            for(const name_ of name) {
+                this.events.push({ name: name_, callback: callback });
+            }
+        }
+        else {
+            this.events.push({ name: name, callback: callback });
+        }
+    }
+
+    off(name) {
+        for(const event of this.events) {
+            if(event.name == name) {
+                this.events.splice(this.events.indexOf(event), 1);
+            }
+        }
+    }
+
+    fire(name, data) {
+        for(const event of this.events) {
+            if(event.name == name) {
+                event.callback(data);
+            }
+        }
+    }
+}
+const Events = new EventsHandler;
+
+module.exports = { Server, Packets, Events };
