@@ -80,6 +80,9 @@ packets.IS_SMALL_PACK = (data) => {
 };
 
 packets.IS_SMALL = (data) => {
+    data.size = 8;
+    data.type = 4;
+
 	const struct =  `
         typedef struct {
             unsigned char size;
@@ -295,14 +298,8 @@ packets.IS_NCI = (data) => {
             unsigned long ipaddress;
         } data;`;
     
-    var buf = unpack(struct, data);
-
-    // IP adress
-    var IP = [];
-	for (var i = 0; i < 4; i++) {
-		IP.push(data[12+i]);
-    }
-    buf.ipaddress = IP.join('.');
+    const buf = unpack(struct, data);
+    buf.ipaddress = data.slice(12, 16).join('.');
 
     return buf;
 }
@@ -544,20 +541,11 @@ packets.IS_MCI = (data) => {
         } data;`;
 
     const buf = unpack(struct, data);
+    buf.compcar = [];
 
-    if(buf.compcar === undefined) {
-        buf.compcar = [];
-    }
-
-    
-    for(let i = 0; i < buf.numc; i++)
-	{
-		// Next packet start position
-		var start = 4 + (i * 28);
-		var tbuf = data.slice(start, (start + 28));
-
-		var c = packets.CompCar(tbuf);
-        buf.compcar.push(c);
+    for(let i = 0; i < buf.numc; i++) {
+		const start = 4 + (i * 28);
+        buf.compcar.push(packets.CompCar(data.slice(start, (start + 28))));
     }
 
     return buf;
@@ -665,16 +653,11 @@ packets.IS_AXM_UNPACK = (data) => {
         } data;`;
 
     const buf = unpack(struct, data);
-
     buf.objects = [];
 
-    for(let i = 0; i < buf.numo; i++)
-	{
-		var start = 8 + (i * 8);
-		var tbuf = data.slice(start, (start + 28));
-
-		var c = packets.ObjectInfo(tbuf);
-        buf.objects.push(c);
+    for(let i = 0; i < buf.numo; i++) {
+		const start = 8 + (i * 8);
+        buf.objects.push(packets.ObjectInfo(data.slice(start, (start + 28))));
     }
     
     return buf;
@@ -698,88 +681,9 @@ packets.IS_AXM_PACK = (data) => {
         } data;`;
 
     var buf = pack(struct, data);
-
     if(data.info !== undefined) {
-        const inf = data.info;
-        delete data.info;
-
-        buf = Buffer.concat([buf,  packets.ObjectInfoPack(inf)]);
+        buf = Buffer.concat([buf,  packets.ObjectInfoPack(data.info)]);
     }
-
-    return buf;
-}
-
-packets.IS_AXM_PACK_ARRAY = (data) => { // array
-    var objects = JSON.parse(JSON.stringify(data.info));
-
-    if(data.numo > 60 || objects.length > 60) {
-        var buffer = Buffer.alloc(0);
-
-        for (var i = 0; i < Math.floor(objects.length/60); i++) {
-            data.size = 8 + (60 * 8);
-            data.type = 54;
-            data.numo = 60;
-            data.info = objects.slice(i*60, i*60+60);
-
-            buffer = Buffer.concat([buffer,  packets.IS_AXM_PACK_ARRAY_SEND(data)]);
-        }
-
-        if(objects.length % 60 > 0) {
-            data.size = 8 + (objects.length % 60 * 8);
-            data.type = 54;
-            data.numo = objects.length % 60;
-            data.info = objects.slice(Math.floor(objects.length/60)*60, Math.floor(objects.length/60)*60+objects.length % 60);
-            
-            buffer = Buffer.concat([buffer,  packets.IS_AXM_PACK_ARRAY_SEND(data)]);
-        }
-
-        return buffer;
-
-        /*if(data.info.length % 60 > 0) {
-            console.log(Math.floor(data.info.length/60)*60 + data.info.length % 60)
-        }*/
-       //data.size = 8 + (Math.floor(data.info.length/60) * 8);
-        //data.type = 54;
-
-        //console.log(data.size)
-    }
-    else {
-        return packets.IS_AXM_PACK_ARRAY_SEND(data);
-    }
-}
-
-packets.IS_AXM_PACK_ARRAY_SEND = (data) => { // array
-    data.size = 8 + (data.numo * 8);
-    data.type = 54;
-
-    const struct = `
-        typedef struct {
-            unsigned char size;
-            unsigned char type;
-            unsigned char reqi;
-            unsigned char numo;
-
-            unsigned char ucid;
-            unsigned char pmoaction;
-            unsigned char pmoflags;
-            unsigned char sp3;
-        } data;`;
-    
-    var info = false;
-    if(data.info !== undefined) {
-        info = data.info;
-        delete data.info;
-    }
-
-    var buf = pack(struct, data);
-
-    if(info) {
-        info.forEach(object => {
-            buf = Buffer.concat([buf,  packets.ObjectInfoPack(object)]);
-        });
-    }
-
-    //console.log(buf.length)
 
     return buf;
 }
