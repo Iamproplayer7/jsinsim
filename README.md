@@ -35,19 +35,23 @@ Then open <b>config.ini</b> file and change <b>ip</b> and <b>port</b> to your LF
 ## Library functions
 ```js
 const InSim = require('./module/insim');
-
+```
+```js
 /* Server */
 InSim.Server.message(hostName, text, sound || 0); // send message to all players and play sound (optional)
-
+```
+```js
 /* Packets */
 InSim.Packets.send(hostName, name, data); // send packet to the server
 InSim.Packets.on(name, callback: (data)); // register packet listener
-
+```
+```js
 /* Events */
 InSim.Events.fire(name, ...args); // fire event listener named as name
 InSim.Events.on(name, callback: (...args)); // register event listener
 InSim.Events.off(name); // unregister event listener
-
+```
+```js
 /* Players */
 InSim.Players.all(hostName || false); // return players list of selected host (optional)
 InSim.Players.getByUCID(hostName, ucid); // return player by host and UCID
@@ -68,12 +72,14 @@ vehicle     : player current vehicle
 
 player.message(text, sound || 0); // send message to player and play sound (optional)
 player.allowVehicles(vehicles); // allow default vehicles for player like UF1, XFG...
-
+```
+```js
 /* Commands */
 InSim.Commands.on(name, callback: (player, args)); // register command listener
 
 // command is specifed when message starts with prefix that's defined in config file.
-
+```
+```js
 /* Vehicles */
 InSim.Vehicles.all(hostName || false); // return vehicles list of selected host (optional)
 InSim.Vehicles.getByPLID(hostName, ucid); // return vehicle by host and PLID
@@ -101,7 +107,8 @@ resets       : vehicle resets (when and where player reseted his vehicle)
 
 vehicle.setPosition(pos, repair || false); // set vehicle position and repair it (optional)
 vehicle.delete(); // remove vehicle from track (sets player into spectate mode)
-
+```
+```js
 /* Buttons */
 InSim.Buttons.getByUCIDNameGroup(hostName, ucid, name, group); // get button by host, ucid, name and group
 InSim.Buttons.createSimple(player, name, group, width, height, top, left, text, style, inst: (default: false)); 
@@ -116,7 +123,8 @@ InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, 
 // text1: text in window when player clicks it
 // text2: text before click
 // typeIn: max input length
-
+```
+```js
 /* Mods */
 InSim.Mods.loadFile(filePath); // load mods list from selected file, if file is not found function will create and activate file, added and removed mods will be saved and loaded after restart of host
 InSim.Mods.add(modId || array of modIds); // allow to use mod by modId or array of modIds
