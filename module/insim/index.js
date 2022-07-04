@@ -20,7 +20,9 @@ class ServerHandler {
                 admin: 'admin',
                 prefix: '!',
                 pps: 12
-            }, { section: 'host name' }))
+            }, { section: 'host name' }));
+            console.log('[config]: config.ini is created. please set configuration.');
+            return process.exit();
         }
         
         // load config.ini file
@@ -70,6 +72,8 @@ class ServerHandler {
                 iname: '9',
                 insimver: 9
             });
+
+            this.sendPacket(host, 'IS_MAL_PACK', { mods: ['000000'] }); // allow all mods
 
             this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 6 }); // send camera pos
             this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 7 }); // send state info
@@ -136,7 +140,7 @@ class ServerHandler {
     peekByte(host, offset) {
 		offset = offset || 0;
 		return offset >= host.buffer.length ? 0 : host.buffer.take(1).readUInt8(offset)*4;
-	}
+    }
 
     sendPacket(host, name, data) {
         if(!host.client) return;
@@ -185,13 +189,14 @@ class ServerHandler {
 }
 const Server = new ServerHandler;
 
-// import properties
+// import classes
 const PacketsHandler = require('./classes/packets.js');
 const EventsHandler = require('./classes/events.js');
 const PlayersHandler = require('./classes/players.js');
 const VehiclesHandler = require('./classes/vehicles.js');
 const CommandsHandler = require('./classes/commands.js');
 const ButtonsHandler = require('./classes/buttons.js');
+const ModsHandler = require('./classes/mods.js');
 
 const Packets = new PacketsHandler(Server);
 const Events = new EventsHandler(Server);
@@ -199,5 +204,6 @@ const Players = new PlayersHandler(Server, Packets);
 const Vehicles = new VehiclesHandler(Server, Packets, Players);
 const Commands = new CommandsHandler(Server, Packets, Players);
 const Buttons = new ButtonsHandler(Server, Packets, Players);
+const Mods = new ModsHandler(Server, Packets);
 
-module.exports = { Server, Packets, Events, Players, Vehicles, Commands, Buttons };
+module.exports = { Server, Packets, Events, Players, Vehicles, Commands, Buttons, Mods };
