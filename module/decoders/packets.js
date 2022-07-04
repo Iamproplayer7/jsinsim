@@ -845,6 +845,53 @@ packets.IS_CIM = (data) => {
     return unpack(struct, data);
 }
 
+packets.IS_MAL_PACK = (data) => {
+    data.numm = data.mods.length > 120 ? 120 : data.mods.length;
+    data.size = 8 + (data.numm * 4);
+    data.type = 65;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char numm;
+
+            unsigned char ucid;
+            unsigned char flags;
+            unsigned char sp2;
+            unsigned char sp3;
+        } data;`;
+
+    var buffer = pack(struct, data);
+    data.mods.slice(0, 120).forEach(mod => {
+        const modbuffer = Buffer.from('00' + mod, 'hex').reverse();
+        buffer = Buffer.concat([buffer, modbuffer]);
+    });
+
+    return buffer;
+}
+
+packets.IS_MAL = (data) => {
+    data.size = 8;
+    data.type = 65;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char numm;
+
+            unsigned char ucid;
+            unsigned char flags;
+            unsigned char sp2;
+            unsigned char sp3;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
 packets.CompCar = (data) => {
     const struct = `
         typedef struct {
