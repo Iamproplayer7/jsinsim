@@ -15,10 +15,12 @@ InSim.Packets.on('IS_VER', (data) => {
             });
         })
     }, 100);
+
+    InSim.Mods.loadFile('./mods.ini');
+    InSim.Mods.add(['A2F058', '6BDD71']);
 });
 
-
 InSim.Commands.on('test', (player, args) => {
-    player.vehicle.setPosition(player.vehicle.pos, true);
+    player.allowVehicles(['XFG'])
 })
 

@@ -1,0 +1,27 @@
+{
+  "name": "jsinsim",
+  "version": "1.0.0",
+  "description": "A InSim library for Live For Speed written in javascript runtime Node.js.",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iamproplayer7/jsinsim.git"
+  },
+  "keywords": [
+    "insim",
+    "nodejs",
+    "insim"
+  ],
+  "author": "Vidmantas (iamproplayer7)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Iamproplayer7/jsinsim/issues"
+  },
+  "homepage": "https://github.com/Iamproplayer7/jsinsim#readme",
+  "dependencies": {
+    "bufferlist": "^0.1.0"
+  }
+}
