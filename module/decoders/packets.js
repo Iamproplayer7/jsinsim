@@ -369,14 +369,17 @@ packets.IS_NPL = (data) => {
             unsigned char model;
             unsigned char pass;
 
-            int spare;
+            unsigned char RWAdj;
+            unsigned char FWAdj;
+            unsigned char sp2;
+            unsigned char sp3;
 
             unsigned char setf;
             unsigned char nump;
-            unsigned char sp2;
-            unsigned char sp3;
+            unsigned char config;
+            unsigned char fuel;
         } data;`;
-
+    
     return unpack(struct, data);
 }
 
@@ -719,6 +722,7 @@ packets.IS_BFN = (data) => {
 }
 
 packets.IS_BTN = (data) => {
+    data.text = data.text.toString();
     var len = data.text.length + 1;
 
 	if (len > 240)
@@ -869,7 +873,8 @@ packets.CompCar = (data) => {
     buf.x = buf.x / 65536;
     buf.y = buf.y / 65536;
     buf.z = buf.z / 65536;
-    buf.heading = buf.heading / 182.0444444;
+    //buf.heading = buf.heading / 182.0444444;
+    buf.direction = buf.direction / 182.0444444;
 
     return buf;
 }
