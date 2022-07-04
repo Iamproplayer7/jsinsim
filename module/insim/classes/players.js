@@ -1,3 +1,5 @@
+const DEFAULT_VEHICLES = { XFG: 1, XRG: 2, XRT: 4, RB4: 8, FXO: 0x10, LX4: 0x20, LX6: 0x40, MRT: 0x80, UF1: 0x100, RAC: 0x200, FZ5: 0x400, FOX: 0x800, XFR: 0x1000, UFR: 0x2000, FO8: 0x4000, FXR: 0x8000, XRR: 0x10000, FZR: 0x20000, BF1: 0x40000, FBM: 0x80000 };
+
 class PlayerHandler {
     // private variables
     #Packets;
@@ -20,6 +22,17 @@ class PlayerHandler {
     message(text, sound = 0) {
         this.#Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
     }
+
+    allowVehicles(vehicles) {
+        var c = 0;
+        for(const vehicle of vehicles) {
+            if(DEFAULT_VEHICLES[vehicle] !== undefined) {
+                c += DEFAULT_VEHICLES[vehicle];
+            }
+        }
+
+        this.#Packets.send(this.hostName, 'IS_PLC', { ucid: this.ucid, cars: c });
+    }
 }
 
 class PlayersHandler {
@@ -40,7 +53,7 @@ class PlayersHandler {
 
         this.#Packets.on('IS_NCN', (data) => {
             if(data.ucid === 0) return;
-            this.players.push(new PlayerHandler(this.Packets, data));
+            this.players.push(new PlayerHandler(this.#Packets, data));
         });
 
         this.#Packets.on('IS_NCI', (data) => {
