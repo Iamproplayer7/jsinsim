@@ -94,7 +94,7 @@ class VehiclesHandler {
 
     all(hostName = false) {
         if(hostName) {
-            const host = this.Server.hosts[hostName];
+            const host = this.#Server.hosts[hostName];
             if(host === undefined) {
                 throw 'InSim.Vehicles.all: err: host ' + hostName + ' configuration not defined!';
             }
