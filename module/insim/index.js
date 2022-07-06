@@ -7,10 +7,13 @@ const packets = require('../decoders/packets.js');
 
 class ServerHandler {
     constructor() {
+        this.callback = false;
         this.hosts = {};
     }
 
-    start() {
+    start(callback) {
+        this.callback = callback;
+
         // create config.ini if not exists.
         if(!fs.existsSync('./config.ini')) {
             console.log('[config]: creating config.ini..');
@@ -163,7 +166,12 @@ class ServerHandler {
         // if host response it means host is connected
         if(!host.connected) {
             host.connected = true;
-            console.log('[' + host.name + '] Connected.')
+            console.log('[' + host.name + '] Connected.');
+
+            if(this.callback) {
+                this.callback(host.name);
+                this.callback = false;
+            }
         }
 
         // decode packet
@@ -184,10 +192,17 @@ class ServerHandler {
 
             // fire packet handler
             Packets.fire(packetName, packetDecoded);
+
+            //console.log(packetName)
         }
     }
+
+    /* functions */
+    message(hostName, text, sound = 0) {
+        Packets.send(hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+    }
 }
-const Server = new ServerHandler;
+const Server = new ServerHandler();
 
 // import classes
 const PacketsHandler = require('./classes/packets.js');
@@ -197,6 +212,7 @@ const VehiclesHandler = require('./classes/vehicles.js');
 const CommandsHandler = require('./classes/commands.js');
 const ButtonsHandler = require('./classes/buttons.js');
 const ModsHandler = require('./classes/mods.js');
+const ObjectsHandler = require('./classes/objects.js');
 
 const Packets = new PacketsHandler(Server);
 const Events = new EventsHandler(Server);
@@ -205,5 +221,6 @@ const Vehicles = new VehiclesHandler(Server, Packets, Players);
 const Commands = new CommandsHandler(Server, Packets, Players);
 const Buttons = new ButtonsHandler(Server, Packets, Players);
 const Mods = new ModsHandler(Server, Packets);
+const Objects = new ObjectsHandler(Server, Packets);
 
-module.exports = { Server, Packets, Events, Players, Vehicles, Commands, Buttons, Mods };
+module.exports = { Server, Packets, Events, Players, Vehicles, Commands, Buttons, Mods, Objects };
