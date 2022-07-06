@@ -1005,16 +1005,18 @@ const pack = (struct, data) => {
     }
    
     const __f = ezstruct(struct);
-    const buffer = __f.data.toBinary(data);
-
-    return buffer;
+    return __f.data.toBinary(data);
 }
 
 const unpack = (struct, data) => {
     const __f = ezstruct(struct);
-    const buffer = __f.data.fromBinary(data);
 
-    return buffer;
+    // to avoid ezstruct byte length mismatch
+    if(data.length < __f.data.bytes) {
+        data = Buffer.concat([data, Buffer.alloc(__f.data.bytes-data.length)])
+    }
+
+    return __f.data.fromBinary(data);
 }
 
 //////////////////////////////
