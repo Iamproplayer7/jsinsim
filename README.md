@@ -30,7 +30,7 @@ PS C:\Users\Admin\Documents\GitHub\jsinsim> node index.js
 [config]: creating config.ini..
 [config]: config.ini is created. please set configuration.
 ```
-Then open <b>config.ini</b> file and change <b>ip</b> and <b>port</b> to your LFS host. That's it try to run `node index.js` again.
+Then open <b>config.ini</b> file and change <b>ip</b> and <b>port</b> to your LFS host. That's it, try to run `node index.js` again.
 
 ## Library functions
 ```js
