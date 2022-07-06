@@ -127,11 +127,11 @@ InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, 
 ```js
 /* Objects */
 InSim.Objects.all(hostName || false); // return objects list of selected host (optional)
-InSim.Mods.add(hostName, object || array of objects); // add objects to host
-InSim.Mods.addAsync(hostName, object || array of objects); // add objects to host (async function)
-InSim.Mods.remove(hostName, object || array of objects); // remove objects from host
-InSim.Mods.removeAsync(hostName, object || array of objects); // remove objects from host (async function)
-InSim.Mods.move(hostName, object1, object2); // remove object1, add object2
+InSim.Objects.add(hostName, object || array of objects); // add objects to host
+InSim.Objects.addAsync(hostName, object || array of objects); // add objects to host (async function)
+InSim.Objects.remove(hostName, object || array of objects); // remove objects from host
+InSim.Objects.removeAsync(hostName, object || array of objects); // remove objects from host (async function)
+InSim.Objects.move(hostName, object1, object2); // remove object1, add object2
 ```
 ```js
 /* Mods */
