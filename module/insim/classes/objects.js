@@ -44,11 +44,7 @@ class ObjectsHandler {
 
     all(hostName = false) {
         if(hostName) {
-            if(!this.#Server.getHostByName(hostName)) {
-                console.log('InSim.Objects.all: host (' + hostName + ') not found!');
-                return false;
-            }
-            else if(this.objects[hostName] === undefined) {
+            if(this.objects[hostName] === undefined) {
                 console.log('InSim.Objects.all: Objects not loaded yet!');
                 return false;
             }
@@ -71,11 +67,6 @@ class ObjectsHandler {
     }
 
     #sendArray(hostName, action, objects) {
-        if(!this.#Server.getHostByName(hostName)) {
-            console.log('InSim.Objects.sendArray: host (' + hostName + ') not found!');
-            return false;
-        }
-
         if(objects.length > 60) {
             const parts = Math.floor(objects.length / 60);
             const lastPart = objects.length % 60;
@@ -96,11 +87,6 @@ class ObjectsHandler {
     // private end...
 
     add(hostName, objects) {
-        if(!this.#Server.getHostByName(hostName)) {
-            console.log('InSim.Objects.add: host (' + hostName + ') not found!');
-            return false;
-        }
-
         if(Array.isArray(objects)) {
             this.#sendArray(hostName, 1, objects);
         }
@@ -110,15 +96,6 @@ class ObjectsHandler {
     }
 
     async addAsync(hostName, objects) {
-        if(!this.#Server.getHostByName(hostName)) {
-            console.log('InSim.Objects.addAsync: host (' + hostName + ') not found!');
-            return false;
-        }
-        else if(this.objects[hostName] === undefined) {
-            console.log('InSim.Objects.addAsync: Objects not loaded yet!');
-            return false;
-        }
-
         return new Promise(async (resolve) => {
             this.add(hostName, objects);
 
@@ -141,11 +118,6 @@ class ObjectsHandler {
     }
 
     remove(hostName, objects) {
-        if(!this.#Server.getHostByName(hostName)) {
-            console.log('InSim.Objects.remove: host (' + hostName + ') not found!');
-            return false;
-        }
-
         if(Array.isArray(objects)) {
             this.#sendArray(hostName, 2, objects);
         }
@@ -155,15 +127,6 @@ class ObjectsHandler {
     }
 
     async removeAsync(hostName, objects) {
-        if(!this.#Server.getHostByName(hostName)) {
-            console.log('InSim.Objects.removeAsync: host (' + hostName + ') not found!');
-            return false;
-        }
-        else if(this.objects[hostName] === undefined) {
-            console.log('InSim.Objects.removeAsync: Objects not loaded yet!');
-            return false;
-        }
-
         return new Promise(async (resolve) => {
             const before = this.objects[hostName].length;
             this.remove(hostName, objects);
@@ -178,15 +141,6 @@ class ObjectsHandler {
     }
 
     move(hostName, object1, object2) {
-        if(!this.#Server.getHostByName(hostName)) {
-            console.log('InSim.Objects.move: host (' + hostName + ') not found!');
-            return false;
-        }
-        else if(this.objects[hostName] === undefined) {
-            console.log('InSim.Objects.move: Objects not loaded yet!');
-            return false;
-        }
-
         this.#send(hostName, 2, object1);
         this.#send(hostName, 1, object2);
     }
