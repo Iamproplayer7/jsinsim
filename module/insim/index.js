@@ -198,6 +198,11 @@ class ServerHandler {
     }
 
     /* functions */
+    getHostByName(hostName) {
+        const host = this.hosts[hostName];
+        return host === undefined ? false : host;
+    }
+    
     message(hostName, text, sound = 0) {
         Packets.send(hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
     }
