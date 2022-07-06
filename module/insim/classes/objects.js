@@ -39,36 +39,17 @@ class ObjectsHandler {
                     })
                 })
             }
-
-            //console.log('objects', this.objects[data.hostName]);
         });
-    }
-
-    length(hostName = false) {
-        // host objects length
-        if(hostName) {
-            if(this.objects[hostName] === undefined) {
-                console.log('InSim.Objects.length: Err: trying to count ' + hostName + ' objects. Host is not exists!');
-                return false;
-            }
-
-            return this.objects[hostName].length;
-        }
-        // all hosts objects length
-        else {
-            var length = 0;
-            for(const hostName_ of Object.keys(this.objects)) {
-                length += this.objects[hostName_].length;
-            }
-            
-            return length;
-        }
     }
 
     all(hostName = false) {
         if(hostName) {
-            if(this.objects[hostName] === undefined) {
-                console.log('InSim.Objects.all: Err: trying to get ' + hostName + ' objects. Host is not exists!');
+            if(!this.#Server.getHostByName(hostName)) {
+                console.log('InSim.Objects.all: host (' + hostName + ') not found!');
+                return false;
+            }
+            else if(this.objects[hostName] === undefined) {
+                console.log('InSim.Objects.all: Objects not loaded yet!');
                 return false;
             }
 
@@ -79,36 +60,67 @@ class ObjectsHandler {
         }
     }
 
-    add(hostName, object) {
-        this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 1, objects: [ object ]});
+    // private
+    #send(hostName, action, object) {
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.send: host (' + hostName + ') not found!');
+            return false;
+        }
+
+        this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: [ object ]});
     }
 
-    addArray(hostName, objects) {
+    #sendArray(hostName, action, objects) {
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.sendArray: host (' + hostName + ') not found!');
+            return false;
+        }
+
         if(objects.length > 60) {
             const parts = Math.floor(objects.length / 60);
             const lastPart = objects.length % 60;
 
             for(var i = 0; i <= parts; i++) {
                 if(i === parts) {
-                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 1, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
                 }
                 else {
-                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 1, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
                 }
             }
         }
         else {
-            this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 1, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+            this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+        }
+    }
+    // private end...
+
+    add(hostName, objects) {
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.add: host (' + hostName + ') not found!');
+            return false;
+        }
+
+        if(Array.isArray(objects)) {
+            this.#sendArray(hostName, 1, objects);
+        }
+        else {
+            this.#send(hostName, 1, objects);
         }
     }
 
-    async sendArrayAsync(hostName, objects) {
+    async addAsync(hostName, objects) {
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.addAsync: host (' + hostName + ') not found!');
+            return false;
+        }
+        else if(this.objects[hostName] === undefined) {
+            console.log('InSim.Objects.addAsync: Objects not loaded yet!');
+            return false;
+        }
 
-    }
-
-    async addArrayAsync(hostName, objects) {
         return new Promise(async (resolve) => {
-            this.addArray(hostName, objects);
+            this.add(hostName, objects);
 
             var int = setInterval(() => {
                 var loaded = 0;
@@ -128,46 +140,55 @@ class ObjectsHandler {
         })
     }
 
-    remove(hostName, object) {
-        this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 2, objects: [ object ]});
-    }
+    remove(hostName, objects) {
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.remove: host (' + hostName + ') not found!');
+            return false;
+        }
 
-    removeArray(hostName, objects) {
-        if(objects.length > 60) {
-            const parts = Math.floor(objects.length / 60);
-            const lastPart = objects.length % 60;
-
-            for(var i = 0; i <= parts; i++) {
-                if(i === parts) {
-                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 2, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
-                }
-                else {
-                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 2, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
-                }
-            }
+        if(Array.isArray(objects)) {
+            this.#sendArray(hostName, 2, objects);
         }
         else {
-            this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 2, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+            this.#send(hostName, 2, objects);
         }
     }
 
-    async removeArrayAsync(hostName, objects) {
-        return new Promise(resolve => {
-            const beforeLength = this.objects[hostName].length;
-            this.removeArray(hostName, objects);
+    async removeAsync(hostName, objects) {
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.removeAsync: host (' + hostName + ') not found!');
+            return false;
+        }
+        else if(this.objects[hostName] === undefined) {
+            console.log('InSim.Objects.removeAsync: Objects not loaded yet!');
+            return false;
+        }
 
+        return new Promise(async (resolve) => {
+            const before = this.objects[hostName].length;
+            this.remove(hostName, objects);
+            
             var int = setInterval(() => {
-                if(this.objects[hostName].length === beforeLength-objects.length) {
+                if(this.objects[hostName].length === before-objects.length) {
                     clearInterval(int);
                     return resolve(true);
                 }
-            }, 50)
+            }, 50);
         })
     }
 
     move(hostName, object1, object2) {
-        this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 2, objects: [ object1 ]});
-        this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: 1, objects: [ object2 ]});
+        if(!this.#Server.getHostByName(hostName)) {
+            console.log('InSim.Objects.move: host (' + hostName + ') not found!');
+            return false;
+        }
+        else if(this.objects[hostName] === undefined) {
+            console.log('InSim.Objects.move: Objects not loaded yet!');
+            return false;
+        }
+
+        this.#send(hostName, 2, object1);
+        this.#send(hostName, 1, object2);
     }
 }
 
