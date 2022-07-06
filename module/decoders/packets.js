@@ -1005,7 +1005,9 @@ const pack = (struct, data) => {
     }
    
     const __f = ezstruct(struct);
-    return __f.data.toBinary(data);
+    const buffer = __f.data.toBinary(data);
+
+    return buffer;
 }
 
 const unpack = (struct, data) => {
@@ -1016,7 +1018,9 @@ const unpack = (struct, data) => {
         data = Buffer.concat([data, Buffer.alloc(__f.data.bytes-data.length)])
     }
 
-    return __f.data.fromBinary(data);
+    const buffer = __f.data.fromBinary(data);
+
+    return buffer;
 }
 
 //////////////////////////////
