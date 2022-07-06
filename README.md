@@ -11,6 +11,9 @@ Clone this library from github [here](https://github.com/Iamproplayer7/jsinsim/a
 <br/><br/>Run following command inside directory to install required dependencies:
 <br/>`npm install`
 
+## Documentation
+[InSim.Events](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/events.md)
+
 ## InSim
 This is simple example how to start your first program.<br/>
 Create a file named <b>index.js</b> and copy this code there and save it:<br/>
