@@ -638,8 +638,8 @@ packets.IS_OCO = (data) => {
 
 // IS_HLV
 
-packets.IS_AXM_UNPACK = (data) => {
-    data.size = 0;
+packets.IS_AXM = (data) => {
+    data.size = 8;
     data.type = 54;
 
     const struct = `
@@ -655,19 +655,20 @@ packets.IS_AXM_UNPACK = (data) => {
             unsigned char sp3;
         } data;`;
 
-    const buf = unpack(struct, data);
-    buf.objects = [];
+    const buffer = unpack(struct, data);
+    buffer.objects = [];
 
-    for(let i = 0; i < buf.numo; i++) {
+    for(var i = 0; i < buffer.numo; i++) {
 		const start = 8 + (i * 8);
-        buf.objects.push(packets.ObjectInfo(data.slice(start, (start + 28))));
+        buffer.objects.push(packets.ObjectInfo(data.slice(start, (start + 28))));
     }
     
-    return buf;
+    return buffer;
 }
 
 packets.IS_AXM_PACK = (data) => {
-    data.size = 8 + (data.info !== undefined ? 8 : 0);
+    data.numo = data.objects.length;
+    data.size = 8 + data.numo * 8;
     data.type = 54;
 
     const struct = `
@@ -683,12 +684,15 @@ packets.IS_AXM_PACK = (data) => {
             unsigned char sp3;
         } data;`;
 
-    var buf = pack(struct, data);
-    if(data.info !== undefined) {
-        buf = Buffer.concat([buf,  packets.ObjectInfoPack(data.info)]);
+    if(data.ucid !== undefined) {
+        data.pmoflags = 9;
     }
+    var buffer = pack(struct, data);
+    data.objects.forEach((object) => {
+        buffer = Buffer.concat([buffer,  packets.ObjectInfoPack(object)]);
+    });
 
-    return buf;
+    return buffer;
 }
 
 // IS_SCC
@@ -816,9 +820,9 @@ packets.IS_JRR = (data) => {
             unsigned char sp3;
         } data;`;
 
-    var j = packets.ObjectInfoPack({ X: 0, Y: 0, Z: 0, flags: 0, heading: 0 });
+    var j = packets.ObjectInfoPack({ x: 0, y: 0, z: 0, flags: 0, heading: 0 });
     if(data.x !== undefined && data.y !== undefined || data.z !== undefined) {
-        j = packets.ObjectInfoPack({ X: data.x * 16, Y: data.y * 16, Z: data.z * 4, flags: 128, index: 0, heading: data.heading });
+        j = packets.ObjectInfoPack({ x: data.x * 16, y: data.y * 16, z: data.z * 4, flags: 128, index: 0, heading: data.heading });
     }
 
     return Buffer.concat([pack(struct, data),  j]);
@@ -929,9 +933,9 @@ packets.CompCar = (data) => {
 packets.ObjectInfo = (data) => {
     const struct = `
         typedef struct {
-            signed short X;
-            signed short Y;
-            unsigned char Z;
+            signed short x;
+            signed short y;
+            unsigned char z;
 
             unsigned char flags;
             unsigned char index;
@@ -944,9 +948,9 @@ packets.ObjectInfo = (data) => {
 packets.ObjectInfoPack = (data) => {
     const struct = `
         typedef struct {
-            signed short X;
-            signed short Y;
-            unsigned char Z;
+            signed short x;
+            signed short y;
+            unsigned char z;
 
             unsigned char flags;
             unsigned char index;
@@ -964,8 +968,8 @@ packets.CarContOBJ = (data) => {
             unsigned char speed;
             unsigned char zbyte;
 
-            signed short X;
-            signed short Y;
+            signed short x;
+            signed short y;
         } data;`;
 
     return unpack(struct, data);
@@ -1007,8 +1011,6 @@ const pack = (struct, data) => {
 }
 
 const unpack = (struct, data) => {
-    //data.size /= 4;
-
     const __f = ezstruct(struct);
     const buffer = __f.data.fromBinary(data);
 
@@ -1024,7 +1026,7 @@ const PACKETS = [
     'IS_PLL', 'IS_LAP', 'IS_SPX', 'IS_PIT', 'IS_PSF', 'IS_PLA', 'IS_CCH', 'IS_PEN',
     'IS_TOC', 'IS_FLG', 'IS_PFL', 'IS_FIN', 'IS_RES', 'IS_REO', 'IS_NLP', 'IS_MCI',
     'IS_MSX', 'IS_MSL', 'IS_CRS', 'IS_BFN', 'IS_AXI', 'IS_AXO', 'IS_BTN', 'IS_BTC',
-    'IS_BTT', 'IS_RIP', 'IS_SSH', 'IS_CON', 'IS_OBH', 'IS_HLV', 'IS_PLC', 'IS_AXM_UNPACK',
+    'IS_BTT', 'IS_RIP', 'IS_SSH', 'IS_CON', 'IS_OBH', 'IS_HLV', 'IS_PLC', 'IS_AXM',
     'IS_ACR', 'IS_HCP', 'IS_NCI', 'IS_JRR', 'IS_UCO', 'IS_OCO', 'IS_TTC', 'IS_SLC',
     'IS_CSC', 'IS_CIM', 'IS_MAL'
 ];
