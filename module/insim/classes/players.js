@@ -1,12 +1,9 @@
+const Packets = require('./packets.js');
+
 const DEFAULT_VEHICLES = { XFG: 1, XRG: 2, XRT: 4, RB4: 8, FXO: 0x10, LX4: 0x20, LX6: 0x40, MRT: 0x80, UF1: 0x100, RAC: 0x200, FZ5: 0x400, FOX: 0x800, XFR: 0x1000, UFR: 0x2000, FO8: 0x4000, FXR: 0x8000, XRR: 0x10000, FZR: 0x20000, BF1: 0x40000, FBM: 0x80000 };
 
 class PlayerHandler {
-    // private variables
-    #Packets;
-
-    constructor(Packets, data) {
-        this.#Packets = Packets;
-
+    constructor(data) {
         this.hostName = data.hostName;
         this.ucid = data.ucid;
         this.uname = data.uname;
@@ -20,7 +17,11 @@ class PlayerHandler {
     }
 
     message(text, sound = 0) {
-        this.#Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+        Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+    }
+
+    kick() {
+        Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
     }
 
     allowVehicles(vehicles) {
@@ -31,19 +32,12 @@ class PlayerHandler {
             }
         }
 
-        this.#Packets.send(this.hostName, 'IS_PLC', { ucid: this.ucid, cars: c });
+        Packets.send(this.hostName, 'IS_PLC', { ucid: this.ucid, cars: c });
     }
 }
 
 class PlayersHandler {
-    // private variables
-    #Server;
-    #Packets;
-
-    constructor(Server, Packets) {
-        this.#Server = Server;
-        this.#Packets = Packets;
-
+    constructor() {
         this.players = [];
 
         // handle IS_NCN & IS_NCI & IS_CNL packets
@@ -51,12 +45,12 @@ class PlayersHandler {
         // IS_NCI: player connect info
         // IS_CNL: player disconnect
 
-        this.#Packets.on('IS_NCN', (data) => {
+        Packets.on('IS_NCN', (data) => {
             if(data.ucid === 0) return;
-            this.players.push(new PlayerHandler(this.#Packets, data));
+            this.players.push(new PlayerHandler(data));
         });
 
-        this.#Packets.on('IS_NCI', (data) => {
+        Packets.on('IS_NCI', (data) => {
             const player = this.getByUCID(data.hostName, data.ucid);
             if(player) {
                 player.language = data.language;
@@ -65,7 +59,7 @@ class PlayersHandler {
             }
         });
 
-        this.#Packets.on('IS_CNL', (data) => {
+        Packets.on('IS_CNL', (data) => {
             const deleted = this.deleteByUCID(data.hostName, data.ucid);
             if(deleted) {
                 // player deleted
@@ -75,7 +69,7 @@ class PlayersHandler {
 
     all(hostName = false) {
         if(hostName) {
-            const host = this.Server.hosts[hostName];
+            const host = Server.hosts[hostName];
             if(host === undefined) {
                 throw 'InSim.Players.all: err: host ' + hostName + ' configuration not defined!';
             }
@@ -113,4 +107,4 @@ class PlayersHandler {
     }
 }
 
-module.exports = PlayersHandler;
+module.exports = new PlayersHandler;

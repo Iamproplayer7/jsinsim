@@ -1,15 +1,9 @@
+const Server = require('../server.js');
+const Packets = require('./packets.js');
 const fs = require('fs');
-const ini = require('ini');
 
 class ModsHandler {
-    // private variables
-    #Server;
-    #Packets;
-
-    constructor(Server, Packets) {
-        this.#Server = Server;
-        this.#Packets = Packets;
-
+    constructor() {
         this.config = false;
         this.mods = [];
     }
@@ -20,8 +14,8 @@ class ModsHandler {
             fs.writeFileSync(this.config, this.mods.join('\n'));
         }
 
-        for(const hostName of Object.keys(this.#Server.hosts)) {
-            this.#Packets.send(hostName, 'IS_MAL_PACK', { mods: this.mods });
+        for(const hostName of Object.keys(Server.hosts)) {
+            Packets.send(hostName, 'IS_MAL_PACK', { mods: this.mods });
         }
     }
 
@@ -85,4 +79,4 @@ class ModsHandler {
     }
 }
 
-module.exports = ModsHandler;
+module.exports = new ModsHandler;

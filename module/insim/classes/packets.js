@@ -1,11 +1,9 @@
+const Server = require('../server.js');
+
 class PacketsHandler {
-    // private variables
-    #Server;
-
-    constructor(Server) {
-        this.#Server = Server;
-
+    constructor() {
         this.packets = [];
+        this.Server = false;
     }
 
     on(name, callback) {
@@ -28,9 +26,9 @@ class PacketsHandler {
     }
 
     send(hostName, name, data) {
-        const host = this.#Server.hosts[hostName]; if(host === undefined) return;
-        this.#Server.sendPacket(host, name, data);
+        const host = this.Server.hosts[hostName]; if(host === undefined) return;
+        this.Server.sendPacket(host, name, data);
     }
 }
 
-module.exports = PacketsHandler;
+module.exports = new PacketsHandler;

@@ -1,10 +1,8 @@
+const Packets = require('./packets.js');
+const Players = require('./players.js');
+
 class VehicleHandler {
-    // private variables
-    #Packets;
-
-    constructor(Packets, player, data) {
-        this.#Packets = Packets;
-
+    constructor(player, data) {
         this.hostName = data.hostName;
         this.player = player;
 
@@ -28,25 +26,16 @@ class VehicleHandler {
 
     setPosition(pos, repair = false) {
         // heading not working properly
-        this.#Packets.send(this.hostName, 'IS_JRR', { plid: this.plid, jrraction: (repair ? 4 : 5), x: pos.x, y: pos.y, z: pos.z, heading: 0 });
+        Packets.send(this.hostName, 'IS_JRR', { plid: this.plid, jrraction: (repair ? 4 : 5), x: pos.x, y: pos.y, z: pos.z, heading: 0 });
     }
 
     delete() {
-        this.#Packets.send(this.hostName, 'IS_MST', { text: '/spec ' + this.player.uname });  
+        Packets.send(this.hostName, 'IS_MST', { text: '/spec ' + this.player.uname });  
     }
 }
 
 class VehiclesHandler {
-    // private variables
-    #Server;
-    #Packets;
-    #Players;
-
-    constructor(Server, Packets, Players) {
-        this.#Server = Server;
-        this.#Packets = Packets;
-        this.#Players = Players;
-
+    constructor() {
         this.vehicles = [];
 
         // handle IS_NPL & IS_PLL & IS_PLP & IS_CRS & IS_MCI
@@ -56,30 +45,30 @@ class VehiclesHandler {
         // IS_CRS: player resets vehicle
         // IS_MCI: vehicle info
 
-        this.#Packets.on('IS_NPL', (data) => {
-            const player = this.#Players.getByUCID(data.hostName, data.ucid);
+        Packets.on('IS_NPL', (data) => {
+            const player = Players.getByUCID(data.hostName, data.ucid);
             if(player) {
-                const vehicle = new VehicleHandler(this.#Packets, player, data);
+                const vehicle = new VehicleHandler(Packets, player, data);
                 this.vehicles.push(vehicle);
                 player.vehicle = vehicle;
             }
         });
 
-        this.#Packets.on(['IS_PLL', 'IS_PLP'], (data) => {
+        Packets.on(['IS_PLL', 'IS_PLP'], (data) => {
             const deleted = this.deleteByPLID(data.hostName, data.plid);
             if(deleted) {
                 // vehicle deleted
             }
         });
 
-        this.#Packets.on('IS_CRS', (data) => {
+        Packets.on('IS_CRS', (data) => {
             const vehicle = this.getByPLID(data.hostName, data.plid);
             if(vehicle) {
                 vehicle.resets.push({ date: Date.now(), pos: vehicle.pos });
             }
         });
 
-        this.#Packets.on('IS_MCI', (data) => {
+        Packets.on('IS_MCI', (data) => {
             for(const car of data.compcar) {
                 const vehicle = this.getByPLID(data.hostName, car.plid);
                 if(vehicle) {
@@ -94,7 +83,7 @@ class VehiclesHandler {
 
     all(hostName = false) {
         if(hostName) {
-            const host = this.#Server.hosts[hostName];
+            const host = Server.hosts[hostName];
             if(host === undefined) {
                 throw 'InSim.Vehicles.all: err: host ' + hostName + ' configuration not defined!';
             }
@@ -137,4 +126,4 @@ class VehiclesHandler {
     }
 }
 
-module.exports = VehiclesHandler;
+module.exports = new VehiclesHandler;

@@ -1,18 +1,14 @@
+const Server = require('../server.js');
+const Packets = require('./packets.js');
+
 class ObjectsHandler {
-    // private variables
-    #Server;
-    #Packets;
-
-    constructor(Server, Packets) {
-        this.#Server = Server;
-        this.#Packets = Packets;
-
+    constructor() {
         this.objects = {};
 
         // handle IS_AXM packets
         // IS_AXM: server || player add/removed/edited layout
 
-        this.#Packets.on('IS_AXM', (data) => {
+        Packets.on('IS_AXM', (data) => {
             if(this.objects[data.hostName] === undefined) {
                 this.objects[data.hostName] = [];
             }
@@ -58,12 +54,12 @@ class ObjectsHandler {
 
     // private
     #send(hostName, action, object) {
-        if(!this.#Server.getHostByName(hostName)) {
+        if(!Server.getHostByName(hostName)) {
             console.log('InSim.Objects.send: host (' + hostName + ') not found!');
             return false;
         }
 
-        this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: [ object ]});
+        Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: [ object ]});
     }
 
     #sendArray(hostName, action, objects) {
@@ -73,15 +69,15 @@ class ObjectsHandler {
 
             for(var i = 0; i <= parts; i++) {
                 if(i === parts) {
-                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+                    Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
                 }
                 else {
-                    this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+                    Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
                 }
             }
         }
         else {
-            this.#Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+            Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
         }
     }
     // private end...
@@ -146,4 +142,4 @@ class ObjectsHandler {
     }
 }
 
-module.exports = ObjectsHandler;
+module.exports = new ObjectsHandler;

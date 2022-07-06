@@ -1,9 +1,5 @@
 class EventsHandler {
-    // private variables
-    #Server;
-
-    constructor(Server) {
-        this.#Server = Server;
+    constructor() {
         this.events = [];
     }
 
@@ -35,4 +31,4 @@ class EventsHandler {
     }
 }
 
-module.exports = EventsHandler;
+module.exports = new EventsHandler;

@@ -1,14 +1,8 @@
+const Packets = require('./packets.js');
+const Players = require('./players.js');
+
 class ButtonsHandler {
-    // private variables
-    #Server;
-    #Packets;
-    #Players;
-
-    constructor(Server, Packets, Players) {
-        this.#Server = Server;
-        this.#Packets = Packets;
-        this.#Players = Players;
-
+    constructor() {
         this.buttons = {};
 
         // handle IS_BTC & IS_BTT & IS_BFN packets
@@ -16,10 +10,10 @@ class ButtonsHandler {
         // IS_BTT: player type in input
         // IS_BFN: player press SHIFT+U
 
-        this.#Packets.on('IS_BTC', (data) => {
+        Packets.on('IS_BTC', (data) => {
             const button = this.getByUCIDClickId(data.hostName, data.ucid, data.clickid);
             if(button) {
-                const player = this.#Players.getByUCID(data.hostName, data.ucid);
+                const player = Players.getByUCID(data.hostName, data.ucid);
                 if(player) {
                     const cflags = {
                         1: 'left click',
@@ -37,18 +31,18 @@ class ButtonsHandler {
             }
         });
 
-        this.#Packets.on('IS_BTT', (data) => {
+        Packets.on('IS_BTT', (data) => {
             const button = this.getByUCIDClickId(data.hostName, data.ucid, data.clickid);
             if(button) {
-                const player = this.#Players.getByUCID(data.hostName, data.ucid);
+                const player = Players.getByUCID(data.hostName, data.ucid);
                 if(player) {
                     button.callback(player, data.text);
                 }
             }
         });
 
-        this.#Packets.on('IS_BFN', (data) => {
-            const player = this.#Players.getByUCID(data.hostName, data.ucid);
+        Packets.on('IS_BFN', (data) => {
+            const player = Players.getByUCID(data.hostName, data.ucid);
             if(player) {
                 if(this.buttons[player.hostName] === undefined || this.buttons[player.hostName][player.ucid] === undefined) return;
                 this.buttons[player.hostName][player.ucid] = [];
@@ -139,7 +133,7 @@ class ButtonsHandler {
         // send this if button not exists or exists with updated items
         if(!exists || update) {
             this.buttons[player.hostName][player.ucid][clickId] = BTN;
-            this.#Packets.send(player.hostName, 'IS_BTN', {
+            Packets.send(player.hostName, 'IS_BTN', {
                 ucid: player.ucid,
                 reqi: clickId + 1,
                 clickid: clickId,
@@ -168,4 +162,4 @@ class ButtonsHandler {
     }
 }
 
-module.exports = ButtonsHandler;
+module.exports = new ButtonsHandler;
