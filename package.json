@@ -12,8 +12,7 @@
   },
   "keywords": [
     "insim",
-    "nodejs",
-    "insim"
+    "nodejs"
   ],
   "author": "Vidmantas (iamproplayer7)",
   "license": "ISC",
@@ -22,6 +21,7 @@
   },
   "homepage": "https://github.com/Iamproplayer7/jsinsim#readme",
   "dependencies": {
-    "bufferlist": "^0.1.0"
+    "bufferlist": "^0.1.0",
+    "ezstruct": "^0.0.3"
   }
 }
