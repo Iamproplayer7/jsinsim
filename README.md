@@ -125,6 +125,15 @@ InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, 
 // typeIn: max input length
 ```
 ```js
+/* Objects */
+InSim.Objects.all(hostName || false); // return objects list of selected host (optional)
+InSim.Mods.add(hostName, object || array of objects); // add objects to host
+InSim.Mods.addAsync(hostName, object || array of objects); // add objects to host (async function)
+InSim.Mods.remove(hostName, object || array of objects); // remove objects from host
+InSim.Mods.removeAsync(hostName, object || array of objects); // remove objects from host (async function)
+InSim.Mods.move(hostName, object1, object2); // remove object1, add object2
+```
+```js
 /* Mods */
 InSim.Mods.loadFile(filePath); // load mods list from selected file, if file is not found function will create and activate file, added and removed mods will be saved and loaded after restart of host
 InSim.Mods.add(modId || array of modIds); // allow to use mod by modId or array of modIds
