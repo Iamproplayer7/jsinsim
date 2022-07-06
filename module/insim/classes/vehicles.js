@@ -1,4 +1,5 @@
 const Packets = require('./packets.js');
+const Events = require('./events.js');
 const Players = require('./players.js');
 
 class VehicleHandler {
@@ -48,16 +49,21 @@ class VehiclesHandler {
         Packets.on('IS_NPL', (data) => {
             const player = Players.getByUCID(data.hostName, data.ucid);
             if(player) {
-                const vehicle = new VehicleHandler(Packets, player, data);
+                const vehicle = new VehicleHandler(player, data);
                 this.vehicles.push(vehicle);
                 player.vehicle = vehicle;
+
+                // event
+                Events.fire('Vehicle:add', vehicle);
             }
         });
 
         Packets.on(['IS_PLL', 'IS_PLP'], (data) => {
+            const vehicle = this.getByPLID(data.hostName, data.plid);
             const deleted = this.deleteByPLID(data.hostName, data.plid);
             if(deleted) {
-                // vehicle deleted
+                // event
+                Events.fire('Vehicle:remove', vehicle);
             }
         });
 
@@ -65,6 +71,8 @@ class VehiclesHandler {
             const vehicle = this.getByPLID(data.hostName, data.plid);
             if(vehicle) {
                 vehicle.resets.push({ date: Date.now(), pos: vehicle.pos });
+                // event
+                Events.fire('Vehicle:reset', vehicle);
             }
         });
 
@@ -76,6 +84,9 @@ class VehiclesHandler {
                     vehicle.pos = { x: car.x, y: car.y, z: car.z };
                     vehicle.direction = car.direction;
                     vehicle.heading = car.heading;
+
+                    // event
+                    Events.fire('Vehicle:info', vehicle);
                 }
             }
         });

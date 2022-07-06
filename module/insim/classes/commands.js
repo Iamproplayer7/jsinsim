@@ -1,4 +1,5 @@
 const Packets = require('./packets.js');
+const Events = require('./events.js');
 const Players = require('./players.js');
 
 class CommandsHandler {
@@ -7,12 +8,20 @@ class CommandsHandler {
 
         // handle IS_MSO packet
         Packets.on('IS_MSO', (data) => {
-            if(data.ucid === 0 || data.usertype !== 2) return;
+            if(data.ucid === 0) return;
             
             const player = Players.getByUCID(data.hostName, data.ucid);
             if(player) {
-                const message = data.msg.slice(data.textstart, data.msg.length).split(' ');
-                this.fire(message[0].slice(1, message[0].length), player, message.slice(1, message.length));
+                const message = data.msg.slice(data.textstart, data.msg.length);
+                const command = message.split(' ');
+
+                if(data.usertype === 1) {
+                    // event
+                    Events.fire('Player:message', player, message);
+                }
+                else if(data.usertype === 2) {
+                    this.fire(command[0].slice(1, command[0].length), player, command.slice(1, command.length));
+                }
             }
         })
     }

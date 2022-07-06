@@ -1,4 +1,5 @@
 const Packets = require('./packets.js');
+const Events = require('./events.js');
 
 const DEFAULT_VEHICLES = { XFG: 1, XRG: 2, XRT: 4, RB4: 8, FXO: 0x10, LX4: 0x20, LX6: 0x40, MRT: 0x80, UF1: 0x100, RAC: 0x200, FZ5: 0x400, FOX: 0x800, XFR: 0x1000, UFR: 0x2000, FO8: 0x4000, FXR: 0x8000, XRR: 0x10000, FZR: 0x20000, BF1: 0x40000, FBM: 0x80000 };
 
@@ -47,7 +48,12 @@ class PlayersHandler {
 
         Packets.on('IS_NCN', (data) => {
             if(data.ucid === 0) return;
-            this.players.push(new PlayerHandler(data));
+
+            const player = new PlayerHandler(data);
+            this.players.push(player);
+
+            // event
+            Events.fire('Player:connect', player);
         });
 
         Packets.on('IS_NCI', (data) => {
@@ -60,9 +66,11 @@ class PlayersHandler {
         });
 
         Packets.on('IS_CNL', (data) => {
+            const player = this.getByUCID(data.hostName, data.ucid);
             const deleted = this.deleteByUCID(data.hostName, data.ucid);
             if(deleted) {
-                // player deleted
+                // event
+                Events.fire('Player:disconnect', player);
             }
         });
     }

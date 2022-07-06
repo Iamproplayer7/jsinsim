@@ -1,5 +1,6 @@
 const Server = require('../server.js');
 const Packets = require('./packets.js');
+const Events = require('./events.js');
 const fs = require('fs');
 
 class ModsHandler {
@@ -33,6 +34,9 @@ class ModsHandler {
 
             this.mods = mods;
             this.update();
+
+            // event
+            Events.fire('Mods:load', this.mods);
         }
 
         this.config = filePath;
@@ -44,6 +48,9 @@ class ModsHandler {
                 if(this.mods.indexOf(_skinId) === -1) {
                     this.mods.push(_skinId);
                     console.log('[InSim.Mods.add]: added: ' + _skinId);
+
+                    // event
+                    Events.fire('Mods:add', _skinId);
                 }
             })
         }
@@ -51,6 +58,9 @@ class ModsHandler {
             if(this.mods.indexOf(skinId) === -1) {
                 this.mods.push(skinId);
                 console.log('[InSim.Mods.add]: added: ' + skinId);
+
+                // event
+                Events.fire('Mods:add', skinId);
             }
         }
 
@@ -64,6 +74,9 @@ class ModsHandler {
                 if(indexOf !== -1) {
                     this.mods.splice(indexOf, 1);
                     console.log('[InSim.Mods.add]: removed: ' + _skinId);
+
+                    // event
+                    Events.fire('Mods:remove', _skinId);
                 }
             })
         }
@@ -72,6 +85,9 @@ class ModsHandler {
             if(indexOf !== -1) {
                 this.mods.splice(indexOf, 1);
                 console.log('[InSim.Mods.add]: removed: ' + skinId);
+
+                // event
+                Events.fire('Mods:remove', skinId);
             }
         }
 

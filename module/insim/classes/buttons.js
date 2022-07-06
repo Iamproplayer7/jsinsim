@@ -27,6 +27,9 @@ class ButtonsHandler {
                     }
 
                     button.callback(player, cflags[data.cflags]);
+
+                    // event
+                    Events.fire('Button:click', player, cflags[data.cflags]);
                 }
             }
         });
@@ -37,6 +40,9 @@ class ButtonsHandler {
                 const player = Players.getByUCID(data.hostName, data.ucid);
                 if(player) {
                     button.callback(player, data.text);
+
+                    // event
+                    Events.fire('Button:text', player, data.text);
                 }
             }
         });
@@ -46,6 +52,9 @@ class ButtonsHandler {
             if(player) {
                 if(this.buttons[player.hostName] === undefined || this.buttons[player.hostName][player.ucid] === undefined) return;
                 this.buttons[player.hostName][player.ucid] = [];
+
+                // event
+                Events.fire('Button:shiftU', player);
             }
         });
     }
