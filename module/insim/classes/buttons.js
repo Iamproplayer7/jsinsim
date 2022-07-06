@@ -29,7 +29,7 @@ class ButtonsHandler {
                     button.callback(player, cflags[data.cflags]);
 
                     // event
-                    Events.fire('Button:click', player, cflags[data.cflags]);
+                    Events.fire('Buttons:click', player, button, cflags[data.cflags]);
                 }
             }
         });
@@ -42,7 +42,7 @@ class ButtonsHandler {
                     button.callback(player, data.text);
 
                     // event
-                    Events.fire('Button:text', player, data.text);
+                    Events.fire('Buttons:text', player, button, data.text);
                 }
             }
         });
@@ -54,7 +54,7 @@ class ButtonsHandler {
                 this.buttons[player.hostName][player.ucid] = [];
 
                 // event
-                Events.fire('Button:shiftU', player);
+                Events.fire('Buttons:shiftU', player);
             }
         });
     }

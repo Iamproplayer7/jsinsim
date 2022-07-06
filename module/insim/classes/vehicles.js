@@ -72,7 +72,7 @@ class VehiclesHandler {
             if(vehicle) {
                 vehicle.resets.push({ date: Date.now(), pos: vehicle.pos });
                 // event
-                Events.fire('Vehicle:reset', vehicle);
+                Events.fire('Vehicle:reset', vehicle, vehicle.pos);
             }
         });
 

@@ -1,5 +1,6 @@
 const Server = require('../server.js');
 const Packets = require('./packets.js');
+const Players = require('./players.js');
 
 class ObjectsHandler {
     constructor() {
@@ -17,16 +18,18 @@ class ObjectsHandler {
             if(data.pmoaction === 0 || data.pmoaction === 1 || data.pmoaction === 4) {
                 data.objects.forEach((object) => {
                     this.objects[data.hostName].push(object);
+
                     // event
-                    Events.fire('Objects:add', object);
+                    Events.fire('Objects:add', data.hostName, Players.getByUCID(data.ucid), object);
                 });
             }
             
             // clear objects
             if(data.pmoaction === 3) {
                 this.objects[data.hostName] = [];
+
                 // event
-                Events.fire('Objects:clear');
+                Events.fire('Objects:clear', data.hostName, Players.getByUCID(data.ucid));
             }
 
             // remove objects
@@ -35,8 +38,9 @@ class ObjectsHandler {
                     this.objects[data.hostName].forEach((object_, key) => {
                         if(JSON.stringify(object) == JSON.stringify(object_)) {
                             this.objects[data.hostName].splice(key, 1);
+
                             // event
-                            Events.fire('Objects:remove', object_);
+                            Events.fire('Objects:remove', data.hostName, Players.getByUCID(data.ucid), object_);
                         }
                     })
                 })
