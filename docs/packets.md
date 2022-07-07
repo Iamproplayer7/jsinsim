@@ -31,4 +31,4 @@ InSim.Packets.on('IS_VER', (data) => {
 
 ## Packets List
 > Check this [file](https://github.com/Iamproplayer7/jsinsim/blob/main/module/decoders/packets.js) for names or what data should be sent or received!<br/>
-> Also you can use [this](https://en.lfsmanual.net/wiki/InSim.txt)
+> Also you can use [https://en.lfsmanual.net/wiki/InSim.txt](https://en.lfsmanual.net/wiki/InSim.txt).
