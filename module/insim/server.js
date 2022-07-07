@@ -184,8 +184,15 @@ class ServerHandler {
         }
     }
     
-    message(hostName, text, sound = 0) {
-        Packets.send(hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+    message(hostName = false, text, sound = 0) {
+        if(hostName) {
+            Packets.send(hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+        }
+        else {
+            for(const hostName_ of Object.keys(this.hosts)) {
+                Packets.send(hostName_, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+            }
+        }
     }
 }
 
