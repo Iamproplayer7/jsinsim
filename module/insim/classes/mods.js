@@ -16,7 +16,9 @@ class ModsHandler {
         }
 
         for(const hostName of Object.keys(Server.hosts)) {
-            Packets.send(hostName, 'IS_MAL_PACK', { mods: this.mods });
+            if(this.mods.length > 0) {
+                Packets.send(hostName, 'IS_MAL_PACK', { mods: this.mods });
+            }
         }
     }
 
@@ -40,6 +42,10 @@ class ModsHandler {
         }
 
         this.config = filePath;
+    }
+
+    all() {
+        return this.mods;
     }
 
     add(skinId) {
