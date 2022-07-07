@@ -9,6 +9,12 @@ InSim.Buttons.createClick(player, name, group, width, height, top, left, text, s
 
 // create input button
 InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, text2, style, callback, typeIn);
+
+// delete button by NAME & GROUP
+InSim.Buttons.delete(player, name, group);
+
+// delete buttons GROUP
+InSim.Buttons.deleteGroup(player, group);
 ```
 
 ## Arguments
