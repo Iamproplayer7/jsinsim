@@ -122,8 +122,6 @@ packets.IS_ISM = (data) => {
 // IS_SFP
 // IS_MOD
 
-//const windows = require('windows1257');
-
 packets.IS_MSO = (data) => {
     data.size = 136;
     data.type = 11;
@@ -253,7 +251,36 @@ packets.IS_PLC = (data) => {
     return pack(struct, data);
 }
 
-// IS_RST
+packets.IS_RST = (data) => {
+    data.size = 28;
+    data.type = 17;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char zero;
+
+            unsigned char racelaps;
+            unsigned char qualmins;
+            unsigned char nump;
+            unsigned char timing;
+
+            char track[6];
+            unsigned char weather;
+            unsigned char wind;
+
+            signed short flags;
+            signed short numnodes;
+            signed short finish;
+            signed short split1;
+            signed short split2;
+            signed short split3;
+        } data;`;
+
+    return unpack(struct, data);
+}
 
 packets.IS_NCN = (data) => {
     data.size = 56;
@@ -415,7 +442,7 @@ packets.IS_PLL = (data) => {
 
 packets.IS_CRS = (data) => {
     data.size = 76;
-    data.type = 24;
+    data.type = 41;
 
     const struct = `
         typedef struct {
@@ -428,8 +455,54 @@ packets.IS_CRS = (data) => {
     return unpack(struct, data);
 }
 
-// IS_LAP
-// IS_SPX
+packets.IS_LAP = (data) => {
+    data.size = 20;
+    data.type = 24;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            unsigned long ltime;
+            unsigned long etime;
+
+            signed short lapsdone;
+            signed short flags;
+
+            unsigned char sp0;
+            unsigned char penalty;
+            unsigned char numstops;
+            unsigned char fuel200;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
+packets.IS_SPX = (data) => {
+    data.size = 16;
+    data.type = 25;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            unsigned long stime;
+            unsigned long etime;
+
+            unsigned char split;
+            unsigned char penalty;
+            unsigned char numstops;
+            unsigned char fuel200;
+        } data;`;
+
+    return unpack(struct, data);
+}
 
 packets.IS_PIT = (data) => {
     data.size = 24;
@@ -477,7 +550,26 @@ packets.IS_PSF = (data) => {
     return unpack(struct, data);
 }
 
-// IS_PLA
+packets.IS_PLA = (data) => {
+    data.size = 8;
+    data.type = 28;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            unsigned char fact;
+            unsigned char sp1;
+            unsigned char sp2;
+            unsigned char sp3;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
 // IS_CCH
 
 packets.IS_PEN = (data) => {
@@ -522,14 +614,139 @@ packets.IS_TOC = (data) => {
     return unpack(struct, data);
 }
 
-// IS_TOC
-// IS_FLG
-// IS_PFL
-// IS_FIN
-// IS_RES
-// IS_REO
+packets.IS_FLG = (data) => {
+    data.size = 8;
+    data.type = 32;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            unsigned char offon;
+            unsigned char flag;
+            unsigned char carbehind;
+            unsigned char sp3;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
+packets.IS_PFL = (data) => {
+    data.size = 8;
+    data.type = 33;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            signed short flags;
+            signed short spare;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
+packets.IS_FIN = (data) => {
+    data.size = 20;
+    data.type = 34;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            unsigned long ttime;
+            unsigned long btime;
+
+            unsigned char spa;
+            unsigned char numstops;
+            unsigned char confirm;
+            unsigned char spb;
+
+            signed short lapsdone;
+            signed short flags;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
+packets.IS_RES = (data) => {
+    data.size = 84;
+    data.type = 35;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+
+            char uname[24];
+            char pname[24];
+            char plate[8];
+            char cname[4];
+
+            unsigned long ttime;
+            unsigned long btime;
+
+            unsigned char spa;
+            unsigned char numstops;
+            unsigned char confirm;
+            unsigned char spb;
+
+            signed short lapsdone;
+            signed short flags;
+
+            unsigned char resultnum;
+            unsigned char numres;
+            signed short pseconds;
+        } data;`;
+
+    return unpack(struct, data);
+}
+
+packets.IS_REO = (data) => {
+    data.size = 44;
+    data.type = 36;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char nump;
+        } data;`;
+
+    const buffer = unpack(struct, data);
+    buffer.plids = data.slice(4, data.length);
+
+    return buffer;
+}
+
 // IS_AXI
-// IS_AXO
+
+packets.IS_AXO = (data) => {
+    data.size = 4;
+    data.type = 43;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char plid;
+        } data;`;
+
+    return unpack(struct, data);
+}
 
 packets.IS_MCI = (data) => {
     data.size = 32;
@@ -553,7 +770,7 @@ packets.IS_MCI = (data) => {
 
     return buf;
 }
-/*
+
 packets.IS_CON = (data) => {
     data.size = 40;
     data.type = 50;
@@ -569,21 +786,13 @@ packets.IS_CON = (data) => {
             unsigned short time;
         } data;`;
 
-    
+    const buffer = unpack(struct, data);
+    buffer.c1 = packets.CarContact(data.slice(8, 8+16));
+    buffer.c2 = packets.CarContact(data.slice(8+16, 8+16+16));
 
-
-    const buf = unpack(struct, data);
-
-    
-    console.log(data, data.slice(9, 24), data.slice(24, 39));
-    buf.c1 = packets.CarContact(data.slice(9, 24));
-    buf.c2 = packets.CarContact(data.slice(24, 40));
-
-    console.log(buf);
-
-    return buf;
+    return buffer;
 }
-*/
+
 packets.IS_OBH = (data) => {
     data.size = 24;
     data.type = 51;
@@ -874,6 +1083,23 @@ packets.IS_MAL_PACK = (data) => {
     });
 
     return buffer;
+}
+
+packets.IS_SLC = (data) => {
+    data.size = 8;
+    data.type = 62;
+
+    const struct = `
+        typedef struct {
+            unsigned char size;
+            unsigned char type;
+            unsigned char reqi;
+            unsigned char ucid;
+
+            char cname[4];
+        } data;`;
+
+    return unpack(struct, data);
 }
 
 packets.IS_MAL = (data) => {
