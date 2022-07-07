@@ -9,7 +9,7 @@ class ButtonsHandler {
         // handle IS_BTC & IS_BTT & IS_BFN packets
         // IS_BTC: player click button
         // IS_BTT: player type in input
-        // IS_BFN: player press SHIFT+U
+        // IS_BFN: player press SHIFT+I
 
         Packets.on('IS_BTC', (data) => {
             const button = this.getByUCIDClickId(data.hostName, data.ucid, data.clickid);
@@ -55,7 +55,7 @@ class ButtonsHandler {
                 this.buttons[player.hostName][player.ucid] = [];
 
                 // event
-                Events.fire('Buttons:shiftU', player);
+                Events.fire('Buttons:shiftI', player);
             }
         });
     }
