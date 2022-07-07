@@ -1,5 +1,6 @@
 const Server = require('../server.js');
 const Packets = require('./packets.js');
+const Events = require('./events.js');
 const Players = require('./players.js');
 
 class ObjectsHandler {
