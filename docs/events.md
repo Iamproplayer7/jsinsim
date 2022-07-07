@@ -11,15 +11,15 @@ InSim.Events.on('test', (arg1, arg2) => {
 InSim.Events.fire('test', 'testing', 145);
 ```
 
+# Events List
 ## Usage
-You can listen to the all events below:
+You can listen to all events from this List:
 ```js
 InSim.Events.on('Player:connect', (player) => {
-    player.message('Welcome to server!');
+    player.message('Welcome to the server!');
 });
 ```
 
-# Events List
 ## Player
 | Event                     | Arguments           | Info                                           |
 | ------------------------- | ------------------- | ---------------------------------------------- |
