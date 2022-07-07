@@ -37,10 +37,10 @@ InSim.Server.start({
 Run command `node index.js`. You will see this in terminal:<br/>
 ```cmd
 PS C:\Users\Admin\Documents\GitHub\jsinsim> node index.js
-[config]: creating config.ini..
-[config]: config.ini is created. please set configuration.
+[host] Connecting to ip:port
+[host] Connected.
 ```
-Then open <b>config.ini</b> file and change <b>ip</b> and <b>port</b> to your LFS host. That's it, try to run `node index.js` again.
+> If you get connection errors, check your host <b>ip</b>, <b>port</b> and <b>admin</b> password, make sure your public ip is whitelisted in host panel
 
 ## Library functions
 ```js
