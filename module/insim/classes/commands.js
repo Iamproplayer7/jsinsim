@@ -26,6 +26,10 @@ class CommandsHandler {
         })
     }
 
+    all() {
+        return this.commands;
+    }
+
     on(name, callback) {
         if(Array.isArray(name)) {
             for(const name_ of name) {
