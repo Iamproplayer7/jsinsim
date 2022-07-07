@@ -25,6 +25,11 @@ class PlayerHandler {
         Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
     }
 
+    ban(hours = 0) {
+        // 0 = 12h
+        Packets.send(this.hostName, 'IS_MST', { text: '/ban ' + this.uname + ' ' + hours });  
+    }
+
     allowVehicles(vehicles) {
         var c = 0;
         for(const vehicle of vehicles) {
