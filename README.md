@@ -26,7 +26,7 @@ InSim.Server.start({
     host: { // host name used only in module
         ip: '127.0.0.1', // your host ip
         port: 53330,     // your host port
-        admin: 'testas', // your host admin password
+        admin: 'admin password', // your host admin password
         prefix: '!',     // command prefix like (-> !command)
         pps: 12          // vehicle info update per second (max: 12)
     }
@@ -48,7 +48,8 @@ const InSim = require('./module/insim');
 ```
 ```js
 /* Server */
-InSim.Server.message(hostName, text, sound || 0); // send message to all players and play sound (optional)
+InSim.Server.message(hostName || false, text, sound || 0); // send message to all players and play sound (optional)
+InSim.Server.command(hostName || false, command); // send command to host
 ```
 ```js
 /* Packets */
@@ -57,6 +58,7 @@ InSim.Packets.on(name, callback: (data)); // register packet listener
 ```
 ```js
 /* Events */
+InSim.Events.all(); // returns array of listeners
 InSim.Events.fire(name, ...args); // fire event listener named as name
 InSim.Events.on(name, callback: (...args)); // register event listener
 InSim.Events.off(name); // unregister event listener
@@ -64,8 +66,10 @@ InSim.Events.off(name); // unregister event listener
 ```js
 /* Players */
 InSim.Players.all(hostName || false); // return players list of selected host (optional)
+InSim.Players.each(callback: (player)); // call callback for every player
 InSim.Players.getByUCID(hostName, ucid); // return player by host and UCID
-InSim.Players.deleteByUCID(hostName, ucid); // delete player by host and UCID
+InSim.Players.getByKey(hostName, key, value); // return player by host, key and value
+InSim.Players.getByUName(hostName, uname); // return player by host and license name
 
 // player
 /*
@@ -81,10 +85,13 @@ vehicle     : player current vehicle
 */
 
 player.message(text, sound || 0); // send message to player and play sound (optional)
+player.kick(); // kick player
+player.ban(hours || 0); // ban player for specifed hours (0 for 12h)
 player.allowVehicles(vehicles); // allow default vehicles for player like UF1, XFG...
 ```
 ```js
 /* Commands */
+InSim.Commands.all(); // returns array of listeners
 InSim.Commands.on(name, callback: (player, args)); // register command listener
 
 // command is specifed when message starts with prefix that's defined in config file.
@@ -92,6 +99,7 @@ InSim.Commands.on(name, callback: (player, args)); // register command listener
 ```js
 /* Vehicles */
 InSim.Vehicles.all(hostName || false); // return vehicles list of selected host (optional)
+InSim.Vehicles.each(callback: (vehicle)); // call callback for every vehicle
 InSim.Vehicles.getByPLID(hostName, ucid); // return vehicle by host and PLID
 InSim.Vehicles.deleteByPLID(hostName, ucid); // delete vehicle by host and PLID (not recommended, use vehicle.delete(); instead)
 
@@ -145,6 +153,7 @@ InSim.Objects.move(hostName, object1, object2); // remove object1, add object2
 ```
 ```js
 /* Mods */
+InSim.Mods.all(); // return mods array
 InSim.Mods.loadFile(filePath); // load mods list from selected file, if file is not found function will create and activate file, added and removed mods will be saved and loaded after restart of host
 InSim.Mods.add(modId || array of modIds); // allow to use mod by modId or array of modIds
 InSim.Mods.remove(modId || array of modIds); // disallow to use mod by modId or array of modIds
