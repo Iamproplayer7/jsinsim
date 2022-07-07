@@ -38,7 +38,7 @@ InSim.Events.on('Player:connect', (player) => {
 | Vehicle:reset             | `vehicle`           | player reseted a vehicle                       |
 | Vehicle:info              | `vehicle`           | vehicle info is updated (pps times per second) |
 | Vehicle:objectHit              | `vehicle`, `info`           | vehicle hits object |
-| Vehicle:conctact              | `vehicle1`, `vehicle2`, `info1`, `info2`           | vehicle hits other vehicle |
+| Vehicle:contact              | `vehicle1`, `vehicle2`, `info1`, `info2`           | vehicle hits other vehicle |
 
 ## Buttons
 | Event                     | Arguments                        | Info                                           |
