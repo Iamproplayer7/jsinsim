@@ -12,7 +12,15 @@ Clone this library from github [here](https://github.com/Iamproplayer7/jsinsim/a
 <br/>`npm install`
 
 ## Documentation
+[InSim.Server](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/server.md)
 [InSim.Events](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/events.md)
+[InSim.Packets](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/packets.md)
+[InSim.Commands](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/commands.md)
+[InSim.Players](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/players.md)
+[InSim.Vehicles](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/vehicles.md)
+[InSim.Buttons](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/buttons.md)
+[InSim.Objects](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/objects.md)
+[InSim.Mods](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/mods.md)
 
 ## InSim
 This is simple example how to start your first program.<br/>
@@ -41,120 +49,3 @@ PS C:\Users\Admin\Documents\GitHub\jsinsim> node index.js
 [host] Connected.
 ```
 > If you get connection errors, check your host <b>ip</b>, <b>port</b> and <b>admin</b> password, make sure your public ip is whitelisted in host panel
-
-## Library functions
-```js
-const InSim = require('./module/insim');
-```
-```js
-/* Server */
-InSim.Server.message(hostName || false, text, sound || 0); // send message to all players and play sound (optional)
-InSim.Server.command(hostName || false, command); // send command to host
-```
-```js
-/* Packets */
-InSim.Packets.send(hostName, name, data); // send packet to the server
-InSim.Packets.on(name, callback: (data)); // register packet listener
-```
-```js
-/* Events */
-InSim.Events.all(); // returns array of listeners
-InSim.Events.fire(name, ...args); // fire event listener named as name
-InSim.Events.on(name, callback: (...args)); // register event listener
-InSim.Events.off(name); // unregister event listener
-```
-```js
-/* Players */
-InSim.Players.all(hostName || false); // return players list of selected host (optional)
-InSim.Players.each(callback: (player)); // call callback for every player
-InSim.Players.getByUCID(hostName, ucid); // return player by host and UCID
-InSim.Players.getByKey(hostName, key, value); // return player by host, key and value
-InSim.Players.getByUName(hostName, uname); // return player by host and license name
-
-// player
-/*
-hostName    : player host name where is currently connected
-ucid        : player unique id
-uname       : player license name
-pname       : player username
-admin       : is player authorized as admin
-language    : player language
-userid      : player license id
-ip          : player ip
-vehicle     : player current vehicle
-*/
-
-player.message(text, sound || 0); // send message to player and play sound (optional)
-player.kick(); // kick player
-player.ban(hours || 0); // ban player for specifed hours (0 for 12h)
-player.allowVehicles(vehicles); // allow default vehicles for player like UF1, XFG...
-```
-```js
-/* Commands */
-InSim.Commands.all(); // returns array of listeners
-InSim.Commands.on(name, callback: (player, args)); // register command listener
-
-// command is specifed when message starts with prefix that's defined in config file.
-```
-```js
-/* Vehicles */
-InSim.Vehicles.all(hostName || false); // return vehicles list of selected host (optional)
-InSim.Vehicles.each(callback: (vehicle)); // call callback for every vehicle
-InSim.Vehicles.getByPLID(hostName, ucid); // return vehicle by host and PLID
-InSim.Vehicles.deleteByPLID(hostName, ucid); // delete vehicle by host and PLID (not recommended, use vehicle.delete(); instead)
-
-// vehicle
-/*
-hostName     : vehicle host name where is created
-player       : vehicle owner
-plid         : vehicle plid
-plate        : vehicle number plate
-cname        : vehicle name
-sname        : vehicle skin name
-hmass        : vehicle mass (kg)
-htres        : vehicle intake restriction
-config       : vehicle configuration 
-fuel         : vehicle fuel percent if /showfuel yes enabled
-speed        : vehicle speed (km/h)
-pos          : vehicle position
-direction    : vehicle direction
-heading      : vehicle heading
-created      : vehicle creation date (when player joined track)
-resets       : vehicle resets (when and where player reseted his vehicle)
-*/
-
-vehicle.setPosition(pos, repair || false); // set vehicle position and repair it (optional)
-vehicle.delete(); // remove vehicle from track (sets player into spectate mode)
-```
-```js
-/* Buttons */
-InSim.Buttons.getByUCIDNameGroup(hostName, ucid, name, group); // get button by host, ucid, name and group
-InSim.Buttons.createSimple(player, name, group, width, height, top, left, text, style, inst: (default: false)); 
-// create simple button on screen for player
-// inst: true, means button will be visible if you are pressed ESC and etc.
-
-InSim.Buttons.createClick(player, name, group, width, height, top, left, text, style, inst: (default: false), callback: (player, click)); 
-// create clickable button on screen for player, when player clicks it callback will be executed
-
-InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, text2, style, callback: (player, text), typeIn: (default: 95)); 
-// create input button on screen for player, when player inputs text callback will be executed
-// text1: text in window when player clicks it
-// text2: text before click
-// typeIn: max input length
-```
-```js
-/* Objects */
-InSim.Objects.all(hostName || false); // return objects list of selected host (optional)
-InSim.Objects.add(hostName, object || array of objects); // add objects to host
-InSim.Objects.addAsync(hostName, object || array of objects); // add objects to host (async function)
-InSim.Objects.remove(hostName, object || array of objects); // remove objects from host
-InSim.Objects.removeAsync(hostName, object || array of objects); // remove objects from host (async function)
-InSim.Objects.move(hostName, object1, object2); // remove object1, add object2
-```
-```js
-/* Mods */
-InSim.Mods.all(); // return mods array
-InSim.Mods.loadFile(filePath); // load mods list from selected file, if file is not found function will create and activate file, added and removed mods will be saved and loaded after restart of host
-InSim.Mods.add(modId || array of modIds); // allow to use mod by modId or array of modIds
-InSim.Mods.remove(modId || array of modIds); // disallow to use mod by modId or array of modIds
-```
