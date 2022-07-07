@@ -105,6 +105,12 @@ class VehiclesHandler {
         return this.vehicles;
     }
 
+    each(callback) {
+        for(const vehicle of this.vehicles) {
+            callback(vehicle);
+        }
+    }
+
     getByPLID(hostName, plid) {
         var exists = false;
         for(const vehicle of this.vehicles) {
