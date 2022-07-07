@@ -73,6 +73,19 @@ class ButtonsHandler {
         return exists;
     }
 
+    getByUCIDGroup(hostName, ucid, group) {
+        if(this.buttons[hostName] === undefined || this.buttons[hostName][ucid] === undefined) return false;
+
+        var exists = [];
+        for(const button of this.buttons[hostName][ucid]) {
+            if(button !== undefined && button.group == group) {
+                exists.push(button);
+            }
+        }
+
+        return exists;
+    }
+
     getByUCIDClickId(hostName, ucid, clickId) {
         if(this.buttons[hostName] === undefined || this.buttons[hostName][ucid] === undefined) return false;
 
@@ -169,6 +182,31 @@ class ButtonsHandler {
 
     createInput(player, name, group, width, height, top, left, text1, text2, style, callback, typeIn = 95) {
         this.create(player, 'input', name, group, width, height, top, left, text1, text2, style, false, callback, typeIn);
+    }
+
+    delete(player, name, group) {
+        const button = this.getByUCIDNameGroup(player.hostName, player.ucid, name, group);
+        if(button) {
+            const indexOf = this.buttons[player.hostName][player.ucid].indexOf(button);
+            if(indexOf !== -1) {
+                Packets.send(player.hostName, 'IS_BFN', {
+                    subt: 0,
+                    ucid: player.ucid,
+                    clickid: button.clickId
+                });
+
+                this.buttons[player.hostName][player.ucid].splice(indexOf, 1);
+            }
+        }
+    }
+
+    deleteGroup(player, group) {
+        const buttons = this.getByUCIDGroup(player.hostName, player.ucid, group);
+        if(buttons) {
+            for(const button of buttons) {
+                this.delete(player, button.name, button.group);
+            }
+        }
     }
 }
 
