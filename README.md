@@ -22,8 +22,15 @@ Create a file named <b>index.js</b> and copy this code there and save it:<br/>
 const InSim = require('./module/insim');
 
 // init InSim connection
-InSim.Server.start((hostName) => {
-    // send message to all players
+InSim.Server.start({
+    host: { // host name used only in module
+        ip: '127.0.0.1', // your host ip
+        port: 53330,     // your host port
+        admin: 'testas', // your host admin password
+        prefix: '!',     // command prefix like (-> !command)
+        pps: 12          // vehicle info update per second (max: 12)
+    }
+}, (hostName) => { // host name defined above
     InSim.Server.message(hostName, '^2InSim: Node.js connected.');
 });
 ```
