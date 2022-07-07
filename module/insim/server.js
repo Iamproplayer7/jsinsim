@@ -194,6 +194,17 @@ class ServerHandler {
             }
         }
     }
+
+    command(hostName = false, command) {
+        if(hostName) {
+            Packets.send(hostName, 'IS_MST', { text: command });
+        }
+        else {
+            for(const hostName_ of Object.keys(this.hosts)) {
+                Packets.send(hostName_, 'IS_MST', { text: command });
+            }
+        }
+    }
 }
 
 module.exports = new ServerHandler();
