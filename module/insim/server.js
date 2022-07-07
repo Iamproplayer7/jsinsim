@@ -12,43 +12,17 @@ class ServerHandler {
         this.hosts = {};
     }
 
-    start(callback) {
+    start(hosts, callback = false) {
         this.callback = callback;
 
-        // create config.ini if not exists.
-        if(!fs.existsSync('./config.ini')) {
-            console.log('[config]: creating config.ini..');
-            fs.writeFileSync('./config.ini', ini.stringify({ 
-                ip: 'ip',
-                port: 'port',
-                admin: 'admin',
-                prefix: '!',
-                pps: 12
-            }, { section: 'host name' }));
-            console.log('[config]: config.ini is created. please set configuration.');
-            return process.exit();
-        }
-        
-        // load config.ini file
-        const config = ini.parse(fs.readFileSync('./config.ini', 'utf-8'));
-        if(Object.keys(config).length < 1) {
-            console.log('[config]: configuration is wrong. config.ini should look like:\n\n[host name]\nip=server ip\nport=server port\nadmin=server admin password\nprefix=command prefix\npps=NLP/MCI packets per second (0-12)\n');
-            return process.exit();
-        }
-
-        for(const hostName of Object.keys(config)) {
-            if(config[hostName].ip === undefined || config[hostName].port === undefined || config[hostName].admin === undefined) { 
-                console.log('[config]: configuration is wrong. config.ini should look like:\n\n[host name]\nip=server ip\nport=server port\nadmin=server admin password\nprefix=command prefix\npps=NLP/MCI packets per second (0-12)\n');
-                return process.exit();
-            }
-
+        for(const hostName of Object.keys(hosts)) {
             this.hosts[hostName] = {
                 name: hostName, // host name
-                ip: config[hostName].ip, // server ip
-                port: config[hostName].port, // server port
-                admin: config[hostName].admin, // server admin password
-                prefix: config[hostName].prefix, // command prefix
-                pps: config[hostName].pps, // NLP/MCI packets per second
+                ip: hosts[hostName].ip, // server ip
+                port: hosts[hostName].port, // server port
+                admin: hosts[hostName].admin, // server admin password
+                prefix: hosts[hostName].prefix, // command prefix
+                pps: hosts[hostName].pps, // NLP/MCI packets per second
 
                 buffer: new BufferList, // buffer to save incoming packets
                 client: false, // net client
