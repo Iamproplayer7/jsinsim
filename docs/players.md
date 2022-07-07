@@ -29,7 +29,7 @@ player.allowVehicles(vehicles); // allow default vehicles for player like UF1, X
 
 ## Example
 ```js
-// delete all vehicles
+// send message to all players
 InSim.Players.each(player => {
     player.message('^1This is example!');
 });
