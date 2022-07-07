@@ -25,4 +25,3 @@ InSim.Commands.on('object', (player, args) => {
         InSim.Objects.add(player.hostName, { x: player.vehicle.pos.x*16, y: player.vehicle.pos.y*16, z: player.vehicle.pos.z*4, flags: 0, index: 144, heading: 0 });
     }
 });
-
