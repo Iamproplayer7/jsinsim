@@ -1,7 +1,7 @@
 ## Custom events
 You can use this class: `InSim.Events`. 
 ```js
-InSim.Events.on(name, ...args); // register listener for event
+InSim.Events.on(name, callback: (...args)); // register listener for event
 InSim.Events.fire(name, ...args); // fire event listener
 ```
 
