@@ -3,6 +3,10 @@ class EventsHandler {
         this.events = [];
     }
 
+    all() {
+        return this.events;
+    }
+
     on(name, callback) {
         if(Array.isArray(name)) {
             for(const name_ of name) {
