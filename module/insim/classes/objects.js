@@ -94,6 +94,8 @@ class ObjectsHandler {
     // private end...
 
     add(hostName, objects) {
+        if(this.objects[hostName] === undefined) return console.log('InSim.Objects.add: host not ready yet.');
+
         if(Array.isArray(objects)) {
             this.#sendArray(hostName, 1, objects);
         }
@@ -103,6 +105,8 @@ class ObjectsHandler {
     }
 
     async addAsync(hostName, objects) {
+        if(this.objects[hostName] === undefined) return console.log('InSim.Objects.addAsync: host not ready yet.');
+
         return new Promise(async (resolve) => {
             this.add(hostName, objects);
 
@@ -125,6 +129,8 @@ class ObjectsHandler {
     }
 
     remove(hostName, objects) {
+        if(this.objects[hostName] === undefined) return console.log('InSim.Objects.remove: host not ready yet.');
+
         if(Array.isArray(objects)) {
             this.#sendArray(hostName, 2, objects);
         }
@@ -134,6 +140,8 @@ class ObjectsHandler {
     }
 
     async removeAsync(hostName, objects) {
+        if(this.objects[hostName] === undefined) return console.log('InSim.Objects.removeAsync: host not ready yet.');
+
         return new Promise(async (resolve) => {
             const before = this.objects[hostName].length;
             this.remove(hostName, objects);
