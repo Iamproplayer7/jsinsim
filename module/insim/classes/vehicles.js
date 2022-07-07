@@ -45,6 +45,8 @@ class VehiclesHandler {
         // IS_PLP: player pit
         // IS_CRS: player resets vehicle
         // IS_MCI: vehicle info
+        // IS_OBH: vehicle hitted object
+        // IS_CON: vehicle hitted other vehicle
 
         Packets.on('IS_NPL', (data) => {
             const player = Players.getByUCID(data.hostName, data.ucid);
@@ -88,6 +90,23 @@ class VehiclesHandler {
                     // event
                     Events.fire('Vehicle:info', vehicle);
                 }
+            }
+        });
+
+        Packets.on('IS_OBH', (data) => {
+            const vehicle = this.getByPLID(data.hostName, data.plid);
+            if(vehicle) {
+                // event
+                Events.fire('Vehicle:objectHit', vehicle, data);
+            }
+        });
+
+        Packets.on('IS_CON', (data) => {
+            const vehicle1 = this.getByPLID(data.hostName, data.c1.plid);
+            const vehicle2 = this.getByPLID(data.hostName, data.c2.plid);
+            if(vehicle1 && vehicle2) {
+                // event
+                Events.fire('Vehicle:contact', vehicle1, vehicle2, data.c1, data.c2);
             }
         });
     }
