@@ -77,15 +77,17 @@ class PlayersHandler {
 
     all(hostName = false) {
         if(hostName) {
-            const host = Server.hosts[hostName];
-            if(host === undefined) {
-                throw 'InSim.Players.all: err: host ' + hostName + ' configuration not defined!';
-            }
-
             return this.players.filter(player => player.hostName === hostName);
         }
+        else {
+            return this.players;
+        }
+    }
 
-        return this.players;
+    each(callback) {
+        for(const player of this.players) {
+            callback(player);
+        }
     }
 
     getByUCID(hostName, ucid) {
