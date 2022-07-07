@@ -12,14 +12,14 @@ Clone this library from github [here](https://github.com/Iamproplayer7/jsinsim/a
 <br/>`npm install`
 
 ## Documentation
-[InSim.Server](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/server.md)
-[InSim.Events](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/events.md)
-[InSim.Packets](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/packets.md)
-[InSim.Commands](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/commands.md)
-[InSim.Players](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/players.md)
-[InSim.Vehicles](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/vehicles.md)
-[InSim.Buttons](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/buttons.md)
-[InSim.Objects](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/objects.md)
+[InSim.Server](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/server.md)<br/>
+[InSim.Events](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/events.md)<br/>
+[InSim.Packets](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/packets.md)<br/>
+[InSim.Commands](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/commands.md)<br/>
+[InSim.Players](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/players.md)<br/>
+[InSim.Vehicles](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/vehicles.md)<br/>
+[InSim.Buttons](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/buttons.md)<br/>
+[InSim.Objects](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/objects.md)<br/>
 [InSim.Mods](https://github.com/Iamproplayer7/jsinsim/blob/main/docs/mods.md)
 
 ## InSim
