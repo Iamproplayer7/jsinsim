@@ -37,7 +37,7 @@ InSim.Events.on('Player:connect', (player) => {
 | `typeIn` | (only for input button): max input for text                |
 
 ## Styles
-![image](https://user-images.githubusercontent.com/59031975/177833621-32b9cc9c-7439-4dfa-a28c-cff266cd7774.png)
+![image](https://user-images.githubusercontent.com/59031975/177845829-a8981dc2-10bb-457a-a371-2300172ad637.png)
 
 ## Text Colors
 ![image](https://user-images.githubusercontent.com/59031975/177845356-37f966de-0e99-41b1-9ef4-ddc289ae0d3d.png)
