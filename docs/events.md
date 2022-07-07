@@ -1,11 +1,11 @@
-## Custom events
+## Events
 You can use this class: `InSim.Events`. 
 ```js
 InSim.Events.on(name, callback: (...args)); // register listener for event
 InSim.Events.fire(name, ...args); // fire event listener
 ```
 
-## Example
+## Custom Events
 ```js
 InSim.Events.on('test', (arg1, arg2) => {
     console.log(arg1, arg2);
