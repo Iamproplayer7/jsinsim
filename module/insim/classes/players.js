@@ -46,10 +46,13 @@ class PlayersHandler {
     constructor() {
         this.players = [];
 
-        // handle IS_NCN & IS_NCI & IS_CNL packets
+        // handle IS_NCN & IS_NCI & IS_CNL & IS_VTN packets
         // IS_NCN: player connect
         // IS_NCI: player connect info
         // IS_CNL: player disconnect
+        // IS_VTN: player vote
+        // IS_PEN: player penalty
+        // IS_TOC: player take over car
 
         Packets.on('IS_NCN', (data) => {
             if(data.ucid === 0) return;
@@ -78,6 +81,31 @@ class PlayersHandler {
                 Events.fire('Player:disconnect', player);
             }
         });
+
+        Packets.on('IS_VTN', (data) => {
+            const player = this.getByUCID(data.hostName, data.ucid);
+            if(player) {
+                // event
+                Events.fire('Player:vote', player, data.action);
+            }
+        });
+
+        Packets.on('IS_PEN', (data) => {
+            const player = this.getByUCID(data.hostName, data.ucid);
+            if(player) {
+                // event
+                Events.fire('Player:penalty', player, { oldpen: data.oldpen, newpen: data.newpen, reason: data.reason });
+            }
+        });
+
+        Packets.on('IS_TOC', (data) => {
+            const player1 = this.getByUCID(data.hostName, data.olducid);
+            const player2 = this.getByUCID(data.hostName, data.newucid);
+            if(player1 && player2) {
+                // event
+                Events.fire('Player:takeOve', player1, player2);
+            }
+        });
     }
 
     all(hostName = false) {
@@ -99,6 +127,28 @@ class PlayersHandler {
         var exists = false;
         for(const player of this.players) {
             if(player.hostName == hostName && player.ucid == ucid) {
+                exists = player;
+            }
+        }
+
+        return exists;
+    }
+
+    getByKey(hostName, key, value) {
+        var exists = false;
+        for(const player of this.players) {
+            if(player.hostName === hostName && player[key] === value) {
+                exists = player;
+            }
+        }
+
+        return exists;
+    }
+
+    getByUName(hostName, uname) {
+        var exists = false;
+        for(const player of this.players) {
+            if(player.hostName === hostName && player.uname.toLowerCase() === uname.toLowerCase()) {
                 exists = player;
             }
         }
