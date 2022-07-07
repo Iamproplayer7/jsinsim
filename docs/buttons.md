@@ -1,20 +1,21 @@
 ## Buttons
 You can use buttons through this class: `InSim.Buttons`. 
 ```js
-// create simple button
-InSim.Buttons.createSimple(player, name, group, width, height, top, left, text, style, inst);
+InSim.Buttons.createSimple(player, name, group, width, height, top, left, text, style, inst); // create simple button
+InSim.Buttons.createClick(player, name, group, width, height, top, left, text, style, inst, callback); // create clickable button
+InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, text2, style, callback, typeIn); // create input button
+InSim.Buttons.delete(player, name, group); // delete button by NAME & GROUP for player
+InSim.Buttons.deleteGroup(player, group); // delete buttons GROUP for player
+```
 
-// create click button
-InSim.Buttons.createClick(player, name, group, width, height, top, left, text, style, inst, callback);
+## Example
+```js
+InSim.Events.on('Player:connect', (player) => {
+    InSim.Buttons.createClick(player, 'example', 'example', 20, 4, 100, 100, 'this is example', 32, false, (player) => {
+        // player clicked on button
+    }); 
+});
 
-// create input button
-InSim.Buttons.createInput(player, name, group, width, height, top, left, text1, text2, style, callback, typeIn);
-
-// delete button by NAME & GROUP
-InSim.Buttons.delete(player, name, group);
-
-// delete buttons GROUP
-InSim.Buttons.deleteGroup(player, group);
 ```
 
 ## Arguments
@@ -38,3 +39,5 @@ InSim.Buttons.deleteGroup(player, group);
 ## Styles
 ![image](https://user-images.githubusercontent.com/59031975/177833621-32b9cc9c-7439-4dfa-a28c-cff266cd7774.png)
 
+## Text Colors
+![image](https://user-images.githubusercontent.com/59031975/177845356-37f966de-0e99-41b1-9ef4-ddc289ae0d3d.png)

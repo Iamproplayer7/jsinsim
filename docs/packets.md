@@ -1,17 +1,10 @@
 ## Packets
 You can use packets through this class: `InSim.Packets`. 
 ```js
-// listen
-InSim.Packets.on(packetName, (data) => {
-    console.log('packet data:', data);
-});
-
-// send packet
-InSim.Packets.send(hostName, name, data);
-// hostName: send to host
-// name: packet name
-// data: data in object
+InSim.Packets.on(name, callback: (data)); // register listener for packet
+InSim.Packets.send(hostName, name, data); // send packet to host
 ```
+
 ## Example
 ```js
 // listen
@@ -35,7 +28,6 @@ InSim.Packets.on('IS_VER', (data) => {
     InSim.Packets.send(data.hostName, 'IS_MTC', { ucid: 255, text: 'hello this is example' });
 });
 ```
-
 
 ## Packets List
 Check this [file](https://github.com/Iamproplayer7/jsinsim/blob/main/module/decoders/packets.js) for names or what data should be sent or received!

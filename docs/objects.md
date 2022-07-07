@@ -1,23 +1,12 @@
 ## Objects
 You can use objects through this class: `InSim.Objects`. 
 ```js
-// get objects for all hosts, if host specified this returns only that host objects
-console.log(InSim.Objects.all(hostName | false));
-
-// add object
-InSim.Objects.add(hostName, objects | object);
-
-// remove object
-InSim.Objects.remove(hostName, objects | object);
-
-// move object
-InSim.Objects.move(hostName, object1, object2);
-
-// add object async
-await InSim.Objects.addAsync(hostName, objects);
-
-// remove object async
-await InSim.Objects.removeAsync(hostName, objects);
+InSim.Objects.all(hostName | false); // get objects in specified host || or all objects in all hosts
+InSim.Objects.add(hostName, objects | object); // add objects | object
+InSim.Objects.remove(hostName, objects | object); // remove objects | object
+InSim.Objects.move(hostName, object1, object2); // move object1 to object2
+await InSim.Objects.addAsync(hostName, objects); // add objects with async
+await InSim.Objects.removeAsync(hostName, objects); // remove objects with async
 ```
 
 ## Example
@@ -54,7 +43,6 @@ InSim.Packets.on('IS_VER', (data) => {
     }, 500);
 });
 ```
-
 
 ## Objects List
 | Index                     | Name                        |

@@ -1,14 +1,9 @@
 ## Server
 You can use functions through this class: `InSim.Server`. 
 ```js
-// forEach host
-InSim.Server.each(callback: (host));
-
-// send message
-InSim.Server.message(hostName | false, text, sound | 0);
-
-// send command
-InSim.Server.command(hostName | false, command);
+InSim.Server.each(callback: (host)); // call callback on each host
+InSim.Server.message(hostName | false, text, sound | 0); // send message to specified host | to all hosts.
+InSim.Server.command(hostName | false, command); // send command to specified host | to all hosts.
 ```
 
 ## Example
@@ -18,6 +13,6 @@ InSim.Server.each((host) => {
     InSim.Server.message(host.name, 'this is example!');
 });
 
-// or you can do this (this will send message to all hosts)
+// or you can do this
 InSim.Server.message(false, 'this is example!');
 ```
