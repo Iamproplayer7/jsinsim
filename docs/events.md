@@ -26,6 +26,9 @@ InSim.Events.on('Player:connect', (player) => {
 | Player:connect            | `player`            | player connected to host                       |
 | Player:disconnect         | `player`            | player disconnected from host                  |
 | Player:message            | `player`, `message` | player sent message to chat                    |
+| Player:vote            | `player`, `action` | player voted                    |
+| Player:penalty            | `player`, `penalty` | player got penalty                    |
+| Player:takeOver            | `player1`, `player2` | player took over                    |
 
 ## Vehicle
 | Event                     | Arguments           | Info                                           |
@@ -34,13 +37,15 @@ InSim.Events.on('Player:connect', (player) => {
 | Vehicle:remove            | `vehicle`           | player left a track                            |
 | Vehicle:reset             | `vehicle`           | player reseted a vehicle                       |
 | Vehicle:info              | `vehicle`           | vehicle info is updated (pps times per second) |
+| Vehicle:objectHit              | `vehicle`, `info`           | vehicle hits object |
+| Vehicle:conctact              | `vehicle1`, `vehicle2`, `info1`, `info2`           | vehicle hits other vehicle |
 
 ## Buttons
 | Event                     | Arguments                        | Info                                           |
 | ------------------------- | -------------------------------- | ---------------------------------------------- |
 | Buttons:click             | `player`, `button`, `click info` | player clicked a clickable button              |
 | Buttons:text              | `player`, `button`, `text`       | player inputed a text to input button          |
-| Buttons:shiftU            | `player`                         | player pressed shift+u to reset buttons        |
+| Buttons:shiftI            | `player`                         | player pressed shift+i to reset buttons        |
 
 ## Mods
 | Event                     | Arguments                        | Info                                           |
