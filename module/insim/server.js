@@ -145,7 +145,6 @@ class ServerHandler {
 
             if(this.callback) {
                 this.callback(host.name);
-                this.callback = false;
             }
         }
 
@@ -176,6 +175,13 @@ class ServerHandler {
     getHostByName(hostName) {
         const host = this.hosts[hostName];
         return host === undefined ? false : host;
+    }
+
+    each(callback) {
+        for(const hostName of Object.keys(this.hosts)) {
+            const host = this.hosts[hostName];
+            callback(host);
+        }
     }
     
     message(hostName, text, sound = 0) {
