@@ -1,5 +1,5 @@
 ## Objects
-You can use objects through this class: `InSim.Objects`. 
+You can use this class: `InSim.Objects`. 
 ```js
 InSim.Objects.all(hostName | false); // get objects in specified host || or all objects in all hosts
 InSim.Objects.add(hostName, objects | object); // add objects | object

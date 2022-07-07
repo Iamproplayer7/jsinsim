@@ -1,5 +1,5 @@
 ## Commands
-You can listen to commands through this class: `InSim.Commands`. 
+You can use this class: `InSim.Commands`. 
 ```js
 InSim.Commands.on(name, callback: (player, args)); // register listener for command
 ```

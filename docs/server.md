@@ -1,5 +1,5 @@
 ## Server
-You can use functions through this class: `InSim.Server`. 
+You can use this class: `InSim.Server`. 
 ```js
 InSim.Server.each(callback: (host)); // call callback on each host
 InSim.Server.message(hostName | false, text, sound | 0); // send message to specified host | to all hosts.

@@ -1,5 +1,5 @@
 ## Buttons
-You can use buttons through this class: `InSim.Buttons`. 
+You can use this class: `InSim.Buttons`. 
 ```js
 InSim.Buttons.createSimple(player, name, group, width, height, top, left, text, style, inst); // create simple button
 InSim.Buttons.createClick(player, name, group, width, height, top, left, text, style, inst, callback); // create clickable button

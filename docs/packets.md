@@ -1,5 +1,5 @@
 ## Packets
-You can use packets through this class: `InSim.Packets`. 
+You can use this class: `InSim.Packets`. 
 ```js
 InSim.Packets.on(name, callback: (data)); // register listener for packet
 InSim.Packets.send(hostName, name, data); // send packet to host
