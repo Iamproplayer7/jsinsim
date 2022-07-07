@@ -15,7 +15,7 @@ InSim.Server.start({
 });
 
 /* EXAMPLE */
-// listen to command !mods
+// listen to command !object
 InSim.Commands.on('object', (player, args) => {
     if(!player.vehicle) {
         return player.message('^1You need to be in a vehicle!');
