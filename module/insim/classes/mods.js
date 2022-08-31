@@ -31,7 +31,13 @@ class ModsHandler {
         }
         else {
             const fileData = fs.readFileSync(filePath);
-            const mods = fileData.toString().split('\n').filter(mod => mod.length > 0 && mod.length < 4);
+            let EoLSequence = "";
+
+            if (fileData.toString().includes("\r")) {
+                EoLSequence = "\r";
+            }
+
+            const mods = fileData.toString().split(EoLSequence + '\n').filter(mod => mod.length > 0 && mod.length <= 6);
             console.log('[InSim.Mods.loadFile]: file loaded. Mods count: ' + mods.length);
 
             this.mods = mods;
