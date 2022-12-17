@@ -29,16 +29,17 @@ InSim.Events.on('Player:connect', (player) => {
 | Event                     | Arguments           | Info                                           |
 | ------------------------- | ------------------- | ---------------------------------------------- |
 | Player:connect            | `player`            | player connected to host                       |
-| Player:disconnect         | `player`            | player disconnected from host                  |
+| Player:disconnect         | `player`, `reason`            | player disconnected from host                  |
 | Player:message            | `player`, `message` | player sent message to chat                    |
 | Player:vote            | `player`, `action` | player voted                    |
 | Player:penalty            | `player`, `penalty` | player got penalty                    |
 | Player:takeOver            | `player1`, `player2` | player took over                    |
-| Player:pnameUpdate            | `player` | player name update                    |
+| Player:pnameUpdate            | `player`, `data` | player name update (old, new)                    |
 
 ## Vehicle
 | Event                     | Arguments           | Info                                           |
 | ------------------------- | ------------------- | ---------------------------------------------- |
+| Vehicle:joinRequest               | `data`           | player requesting to join into track                          |
 | Vehicle:add               | `vehicle`           | player joined a track                          |
 | Vehicle:remove            | `vehicle`           | player left a track                            |
 | Vehicle:reset             | `vehicle`           | player reseted a vehicle                       |
@@ -65,5 +66,6 @@ InSim.Events.on('Player:connect', (player) => {
 | Event                     | Arguments                        | Info                                           |
 | ------------------------- | -------------------------------- | ---------------------------------------------- |
 | Objects:add               | `hostName`, `player`, `object`   | object is added                                |
+| Objects:update               | `hostName`, `player`, `object`   | object is updated                                |
 | Objects:remove            | `hostName`, `player`, `object`   | object is removed                              |
 | Objects:clear             | `hostName`, `player`             | objects are cleared                            |
