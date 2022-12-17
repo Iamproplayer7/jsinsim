@@ -10,6 +10,7 @@ class ServerHandler {
     constructor() {
         this.callback = false;
         this.hosts = {};
+        this.intervals = {};
     }
 
     start(hosts, callback = false) {
@@ -166,8 +167,6 @@ class ServerHandler {
 
             // fire packet handler
             Packets.fire(packetName, packetDecoded);
-
-            //console.log(packetName)
         }
     }
 
