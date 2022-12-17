@@ -44,7 +44,7 @@ class ServerHandler {
             this.sendPacket(host, 'IS_ISI', { 
                 reqi: 1,
                 udpport: 0,
-                flags: 2043, // all flags for InSim 9
+                flags: 2043+2048, // all flags for InSim 9
                 prefix: host.prefix.charCodeAt(0),
                 interval: 1000/host.pps,
                 admin: host.admin,
