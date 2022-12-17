@@ -26,7 +26,7 @@ created      : vehicle creation date (when player joined track)
 resets       : vehicle resets (when and where player reseted his vehicle)
 */
 
-vehicle.setPosition(pos, repair || false); // set vehicle position and repair it (optional)
+vehicle.setPosition(pos, repair || false, heading || 0); // set vehicle position, repair it (optional), set heading (optional)
 vehicle.delete(); // remove vehicle from track (sets player into spectate mode)
 ```
 
