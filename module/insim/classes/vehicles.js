@@ -64,7 +64,7 @@ class VehiclesHandler {
                     // event
                     Events.fire('Vehicle:joinRequest', data);
                 }
-                else if(data.nump == 1) {
+                else {
                     const vehicle = new VehicleHandler(player, data);
                     this.vehicles.push(vehicle);
                     player.vehicle = vehicle;
