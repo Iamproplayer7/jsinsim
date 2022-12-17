@@ -27,10 +27,13 @@ class ButtonsHandler {
                         10: 'shift + right click'
                     }
 
-                    button.callback(player, cflags[data.cflags]);
-
                     // event
                     Events.fire('Buttons:click', player, button, cflags[data.cflags]);
+
+                    // callback
+                    if(button.callback) {
+                        button.callback(player, cflags[data.cflags]);
+                    }
                 }
             }
         });
@@ -113,13 +116,13 @@ class ButtonsHandler {
 
         if(!exists) {
             for(var i = 0; i < 200; i++) {
-                if(this.buttons[player.hostName][player.ucid][i] === undefined && !clickId) {
+                if(this.buttons[player.hostName][player.ucid][i] === undefined && clickId === false) {
                     clickId = i;
                 }
             }
-            
+
             // if there no space for button
-            if(!clickId) {
+            if(clickId === false) {
                 return console.log('InSim.Buttons.create: err: ' + player.hostName + ':' + player.ucid + ' reached maximum of buttons on screen!');
             }
         }
@@ -154,8 +157,9 @@ class ButtonsHandler {
         }
         
         // send this if button not exists or exists with updated items
-        if(!exists || update) {
+        if(!exists) {
             this.buttons[player.hostName][player.ucid][clickId] = BTN;
+
             Packets.send(player.hostName, 'IS_BTN', {
                 ucid: player.ucid,
                 reqi: clickId + 1,
@@ -187,16 +191,13 @@ class ButtonsHandler {
     delete(player, name, group) {
         const button = this.getByUCIDNameGroup(player.hostName, player.ucid, name, group);
         if(button) {
-            const indexOf = this.buttons[player.hostName][player.ucid].indexOf(button);
-            if(indexOf !== -1) {
-                Packets.send(player.hostName, 'IS_BFN', {
-                    subt: 0,
-                    ucid: player.ucid,
-                    clickid: button.clickId
-                });
+            Packets.send(player.hostName, 'IS_BFN', {
+                subt: 0,
+                ucid: player.ucid,
+                clickid: button.clickId
+            });
 
-                this.buttons[player.hostName][player.ucid].splice(indexOf, 1);
-            }
+            this.buttons[player.hostName][player.ucid][button.clickId] = undefined;
         }
     }
 
