@@ -9,20 +9,30 @@ class PlayerHandler {
         this.ucid = data.ucid;
         this.uname = data.uname;
         this.pname = data.pname;
-        this.admin = !!data.admin;
+        this.adminLFS = !!data.admin;
         this.language = 0;
         this.userid = 0;
         this.ip = false;
 
         this.vehicle = false;
+        this.intervals = {};
     }
 
     message(text, sound = 0) {
         Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
     }
 
-    kick() {
-        Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
+    kick(text = false) {
+        if(!text) {
+            Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
+        }
+        else {
+            Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text });
+
+            setTimeout(() => {
+                Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
+            }, 100);    
+        }
     }
 
     ban(hours = 0) {
@@ -49,10 +59,12 @@ class PlayersHandler {
         // handle IS_NCN & IS_NCI & IS_CNL & IS_VTN packets
         // IS_NCN: player connect
         // IS_NCI: player connect info
+        // IS_CPR: player info update
         // IS_CNL: player disconnect
         // IS_VTN: player vote
         // IS_PEN: player penalty
         // IS_TOC: player take over car
+        // IS_CIM: player interface update
 
         Packets.on('IS_NCN', (data) => {
             if(data.ucid === 0) return;
@@ -70,6 +82,17 @@ class PlayersHandler {
                 player.language = data.language;
                 player.userid = data.userid;
                 player.ip = data.ipaddress;
+            }
+        });
+
+        Packets.on('IS_CPR', (data) => {
+            const player = this.getByUCID(data.hostName, data.ucid);
+            if(player) {
+                if(player.pname !== data.pname) {
+                    // event
+                    Events.fire('Player:pnameUpdate', player, { old: player.pname, new: data.pname });
+                    player.pname = data.pname;
+                }
             }
         });
 
@@ -104,6 +127,14 @@ class PlayersHandler {
             if(player1 && player2) {
                 // event
                 Events.fire('Player:takeOve', player1, player2);
+            }
+        });
+
+        Packets.on('IS_CIM', (data) => {
+            const player = this.getByUCID(data.hostName, data.ucid);
+            if(player) {
+                // event
+                Events.fire('Player:interfaceUpdate', player, data.mode, data.submode, data.seltype);
             }
         });
     }
@@ -145,11 +176,13 @@ class PlayersHandler {
         return exists;
     }
 
-    getByUName(hostName, uname) {
+    getByUName(hostName = false, uname) {
         var exists = false;
         for(const player of this.players) {
-            if(player.hostName === hostName && player.uname.toLowerCase() === uname.toLowerCase()) {
-                exists = player;
+            if((!hostName || player.hostName == hostName) && player.uname.toLowerCase() === uname.toLowerCase()) {
+                if(player.uname.toLowerCase() === uname.toLowerCase()) {
+                    exists = player;
+                }
             }
         }
 
@@ -162,6 +195,11 @@ class PlayersHandler {
             if(player.hostName == hostName && player.ucid == ucid) {
                 const indexOf = this.players.indexOf(player);
                 if(indexOf !== -1) {
+                    // remove intervals
+                    Object.keys(player.intervals).forEach(key => {
+                        clearInterval(player.intervals[key]);
+                    });
+                    
                     this.players.splice(indexOf, 1);
                     deleted = true;
                 }
