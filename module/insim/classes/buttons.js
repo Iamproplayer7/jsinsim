@@ -157,7 +157,7 @@ class ButtonsHandler {
         }
         
         // send this if button not exists or exists with updated items
-        if(!exists) {
+        if(!exists || update) {
             this.buttons[player.hostName][player.ucid][clickId] = BTN;
 
             Packets.send(player.hostName, 'IS_BTN', {
