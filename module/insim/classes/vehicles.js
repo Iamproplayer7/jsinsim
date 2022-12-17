@@ -25,9 +25,17 @@ class VehicleHandler {
         this.resets = [];
     }
 
-    setPosition(pos, repair = false) {
-        // heading not working properly
-        Packets.send(this.hostName, 'IS_JRR', { plid: this.plid, jrraction: (repair ? 4 : 5), x: pos.x, y: pos.y, z: pos.z, heading: 0 });
+    setPosition(pos, repair = false, heading = 0) {
+        // degrees to 256 & reverse
+        heading = heading * 256 / 360;
+        if(heading > 128) {
+            heading = heading-128;
+        }
+        else if(heading < 128) {
+            heading = heading+128;
+        }
+
+        Packets.send(this.hostName, 'IS_JRR', { plid: this.plid, jrraction: (repair ? 4 : 5), x: pos.x, y: pos.y, z: pos.z, heading: heading });
     }
 
     delete() {
@@ -52,12 +60,18 @@ class VehiclesHandler {
         Packets.on('IS_NPL', (data) => {
             const player = Players.getByUCID(data.hostName, data.ucid);
             if(player) {
-                const vehicle = new VehicleHandler(player, data);
-                this.vehicles.push(vehicle);
-                player.vehicle = vehicle;
+                if(data.nump == 0) {
+                    // event
+                    Events.fire('Vehicle:joinRequest', data);
+                }
+                else if(data.nump == 1) {
+                    const vehicle = new VehicleHandler(player, data);
+                    this.vehicles.push(vehicle);
+                    player.vehicle = vehicle;
 
-                // event
-                Events.fire('Vehicle:add', vehicle);
+                    // event
+                    Events.fire('Vehicle:add', vehicle);
+                }
             }
         });
 
