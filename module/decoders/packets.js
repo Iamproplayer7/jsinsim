@@ -1150,7 +1150,7 @@ packets.CompCar = (data) => {
     buf.x = buf.x / 65536;
     buf.y = buf.y / 65536;
     buf.z = buf.z / 65536;
-    //buf.heading = buf.heading / 182.0444444;
+    buf.heading = buf.heading / 32768 * 180;
     buf.direction = buf.direction / 182.0444444;
 
     return buf;
