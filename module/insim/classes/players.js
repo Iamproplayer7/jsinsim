@@ -101,7 +101,7 @@ class PlayersHandler {
             const deleted = this.deleteByUCID(data.hostName, data.ucid);
             if(deleted) {
                 // event
-                Events.fire('Player:disconnect', player);
+                Events.fire('Player:disconnect', player, player.vehicle, data.reason);
             }
         });
 
