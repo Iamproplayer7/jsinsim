@@ -34,6 +34,7 @@ InSim.Events.on('Player:connect', (player) => {
 | Player:vote            | `player`, `action` | player voted                    |
 | Player:penalty            | `player`, `penalty` | player got penalty                    |
 | Player:takeOver            | `player1`, `player2` | player took over                    |
+| Player:pnameUpdate            | `player` | player name update                    |
 
 ## Vehicle
 | Event                     | Arguments           | Info                                           |
@@ -44,6 +45,7 @@ InSim.Events.on('Player:connect', (player) => {
 | Vehicle:info              | `vehicle`           | vehicle info is updated (pps times per second) |
 | Vehicle:objectHit              | `vehicle`, `info`           | vehicle hits object |
 | Vehicle:contact              | `vehicle1`, `vehicle2`, `info1`, `info2`           | vehicle hits other vehicle |
+| Vehicle:plateUpdate              | `vehicle`, `data`           | vehicle number plate update (old, new) |
 
 ## Buttons
 | Event                     | Arguments                        | Info                                           |
