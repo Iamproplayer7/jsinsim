@@ -19,7 +19,7 @@ class PlayerHandler {
     }
 
     message(text, sound = 0) {
-        Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
+        Packets.send(this.hostName, 'IS_MTC', { ucid: this.ucid, text: text, sound: sound });
     }
 
     kick(text = false) {
@@ -27,7 +27,7 @@ class PlayerHandler {
             Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
         }
         else {
-            Packets.send(this.hostName, 'IS_MTC', { ucid: 255, text: text });
+            Packets.send(this.hostName, 'IS_MTC', { ucid: this.ucid, text: text });
 
             setTimeout(() => {
                 Packets.send(this.hostName, 'IS_MST', { text: '/kick ' + this.uname });  
