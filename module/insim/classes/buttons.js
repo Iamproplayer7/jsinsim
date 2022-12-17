@@ -188,6 +188,29 @@ class ButtonsHandler {
         this.create(player, 'input', name, group, width, height, top, left, text1, text2, style, false, callback, typeIn);
     }
 
+    edit(player, name, group, info) {
+        const button = this.getByUCIDNameGroup(player.hostName, player.ucid, name, group);
+        if(button) {
+            Object.keys(info).forEach(key => {
+                button[key] = info[key];
+            })
+
+            Packets.send(player.hostName, 'IS_BTN', {
+                ucid: player.ucid,
+                reqi: button.clickId + 1,
+                clickid: button.clickId,
+                inst: (button.inst ? (button.type == "input" ? 0 : 128) : 0),
+                bstyle: button.style,
+                typein: button.typeIn,
+                l: button.left,
+                t: button.top,
+                w: button.width,
+                h: button.height,
+                text: (button.text1 ? "\0" + button.text1 + "\0" + button.text2 : button.text2)
+            });
+        }
+    }
+
     delete(player, name, group) {
         const button = this.getByUCIDNameGroup(player.hostName, player.ucid, name, group);
         if(button) {
