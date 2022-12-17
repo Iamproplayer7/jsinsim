@@ -44,6 +44,7 @@ class VehiclesHandler {
         // IS_PLL: player spectate
         // IS_PLP: player pit
         // IS_CRS: player resets vehicle
+        // IS_CPR: player changes info
         // IS_MCI: vehicle info
         // IS_OBH: vehicle hitted object
         // IS_CON: vehicle hitted other vehicle
@@ -75,6 +76,18 @@ class VehiclesHandler {
                 vehicle.resets.push({ date: Date.now(), pos: vehicle.pos });
                 // event
                 Events.fire('Vehicle:reset', vehicle, vehicle.pos);
+            }
+        });
+
+        Packets.on('IS_CPR', (data) => {
+            const player = Players.getByUCID(data.hostName, data.ucid);
+
+            if(player) {
+                if(player.vehicle && player.vehicle.plate !== data.plate) {
+                    // event
+                    Events.fire('Vehicle:plateUpdate', player.vehicle, { old: player.vehicle.plate, new: data.plate });
+                    player.vehicle.plate = data.plate;
+                }
             }
         });
 
