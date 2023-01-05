@@ -1,6 +1,9 @@
 const ezstruct = require('ezstruct');
 ezstruct.setStringEncoding('ASCII');
 
+// data
+const OFFICIAL_VEHICLES =  ['UF1', 'XFG', 'XRG', 'LX4', 'LX6', 'RB4', 'FXO', 'XRT', 'RAC', 'FZ5', 'UFR', 'XFR', 'FXR', 'XRR', 'FZR', 'MRT', 'FBM', 'FOX', 'FO8', 'BF1'];
+
 const packets = {};
 packets.IS_ISI = (data) => {
     data.size = 44;
@@ -387,7 +390,7 @@ packets.IS_NPL = (data) => {
             char pname[24];
             char plate[8];
 
-            char cname[4];
+            unsigned long cname;
             char sname[16];
             char tyres[4];
 
@@ -407,7 +410,30 @@ packets.IS_NPL = (data) => {
             unsigned char fuel;
         } data;`;
     
-    return unpack(struct, data);
+
+    const buffer = unpack(struct, data);
+    
+    var exists = false;
+    OFFICIAL_VEHICLES.forEach(cname => {
+        const oid = Buffer.concat([Buffer.from(cname), new Buffer.alloc(1)]).readUInt32LE(0).toString(16);
+        if(oid == buffer.cname.toString(16)) {
+            exists = cname;
+        }
+    })
+    
+    /*
+    const buf = Buffer.alloc(8);
+    buf[0] = Buffer.from(buffer.cname)[0];
+    buf[1] = Buffer.from(buffer.cname)[1];
+    buf[2] = Buffer.from(buffer.cname)[2];
+
+    console.log(((buf.readUInt32LE(0) << 8) + buf.readUInt32LE(4)).toString(16))*/
+    
+    buffer.cname = exists ? exists : buffer.cname.toString(16);
+    buffer.cname = buffer.cname.toUpperCase();
+    buffer.isOfficial = !!exists;
+
+    return buffer;
 }
 
 packets.IS_PLP = (data) => {
@@ -518,7 +544,7 @@ packets.IS_PIT = (data) => {
             unsigned short lapsdone;
             unsigned short flags;
 
-            unsigned char sp0;
+            unsigned char fuelAdd;
             unsigned char penalty;
             unsigned char numstops;
             unsigned char sp3;
@@ -893,9 +919,6 @@ packets.IS_AXM_PACK = (data) => {
             unsigned char sp3;
         } data;`;
 
-    if(data.ucid !== undefined) {
-        data.pmoflags = 9;
-    }
     var buffer = pack(struct, data);
     data.objects.forEach((object) => {
         buffer = Buffer.concat([buffer,  packets.ObjectInfoPack(object)]);
