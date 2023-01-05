@@ -20,6 +20,8 @@ class VehicleHandler {
         this.pos = false;
         this.direction = 0;
         this.heading = 0;
+        this.lagging = false;
+        this.isOfficial = data.isOfficial;
         
         this.created = Date.now();
         this.resets = [];
@@ -56,6 +58,8 @@ class VehiclesHandler {
         // IS_MCI: vehicle info
         // IS_OBH: vehicle hitted object
         // IS_CON: vehicle hitted other vehicle
+        // IS_PIT: vehicle pit stop start
+        // IS_PSF: vehicle pit stop end
 
         Packets.on('IS_NPL', (data) => {
             const player = Players.getByUCID(data.hostName, data.ucid);
@@ -113,6 +117,7 @@ class VehiclesHandler {
                     vehicle.pos = { x: car.x, y: car.y, z: car.z };
                     vehicle.direction = car.direction;
                     vehicle.heading = car.heading;
+                    vehicle.lagging = [32, 33, 34, 96, 160].includes(car.info);
 
                     // event
                     Events.fire('Vehicle:info', vehicle);
@@ -134,6 +139,22 @@ class VehiclesHandler {
             if(vehicle1 && vehicle2) {
                 // event
                 Events.fire('Vehicle:contact', vehicle1, vehicle2, data.c1, data.c2);
+            }
+        });
+        
+        Packets.on('IS_PIT', (data) => {
+            const player = this.getByPLID(data.hostName, data.plid);
+            if(player) {
+                // event
+                Events.fire('Vehicle:pitStopStart', player);
+            }
+        });
+
+        Packets.on('IS_PSF', (data) => {
+            const player = this.getByPLID(data.hostName, data.plid);
+            if(player) {
+                // event
+                Events.fire('Vehicle:pitStopEnd', player);
             }
         });
     }
@@ -165,6 +186,7 @@ class VehiclesHandler {
 
     deleteByPLID(hostName, plid) {
         var deleted = false;
+
         for(const vehicle of this.vehicles) {
             if(vehicle.hostName == hostName && vehicle.plid == plid) {
                 const indexOf = this.vehicles.indexOf(vehicle);
@@ -173,7 +195,8 @@ class VehiclesHandler {
                     if(vehicle.player) {
                         vehicle.player.vehicle = false;
                     }
-
+                    
+                    vehicle.removed = true;
                     this.vehicles.splice(indexOf, 1);
                     deleted = true;
                 }
