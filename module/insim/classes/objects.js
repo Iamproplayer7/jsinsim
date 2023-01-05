@@ -37,7 +37,7 @@ class ObjectsHandler {
                 this.objects[data.hostName] = [];
 
                 // event
-                Events.fire('Objects:clear', data.hostName, Players.getByUCID(data.ucid));
+                Events.fire('Objects:clear', data.hostName, Players.getByUCID(data.hostName, data.ucid));
             }
 
             // remove objects
@@ -48,7 +48,7 @@ class ObjectsHandler {
                             this.objects[data.hostName].splice(key, 1);
 
                             // event
-                            Events.fire('Objects:remove', data.hostName, Players.getByUCID(data.ucid), object_);
+                            Events.fire('Objects:remove', data.hostName, Players.getByUCID(data.hostName, data.ucid), object_);
                         }
                     })
                 })
@@ -81,21 +81,22 @@ class ObjectsHandler {
     }
 
     #sendArray(hostName, action, objects) {
+        if(objects.length < 1) return;
         if(objects.length > 60) {
             const parts = Math.floor(objects.length / 60);
             const lastPart = objects.length % 60;
 
             for(var i = 0; i <= parts; i++) {
                 if(i === parts) {
-                    Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+                    Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, pmoflags: 9, objects: objects.slice(i*60, i*60+lastPart), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
                 }
                 else {
-                    Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+                    Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, pmoflags: 8, objects: objects.slice(i*60, i*60+60), ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
                 }
             }
         }
         else {
-            Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
+            Packets.send(hostName, 'IS_AXM_PACK', { pmoaction: action, pmoflags: 9, objects: objects, ucid: objects[0].ucid !== undefined ? objects[0].ucid : 0 });
         }
     }
     // private end...
