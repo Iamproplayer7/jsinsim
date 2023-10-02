@@ -30,8 +30,9 @@ class ModsHandler {
             console.log('[InSim.Mods.loadFile]: file created. it should look like this: \n90D537\n6BDD71\n...\n');
         }
         else {
-            const fileData = fs.readFileSync(filePath);
-            const mods = fileData.toString().split('\n').filter(mod => mod.length > 0 && mod.length < 4);
+            const fileData = fs.readFileSync(filePath).toString();
+
+            const mods = fileData.split((fileData.includes('\r') ? '\r\n' : '\n')).filter(mod => mod.length > 0 && mod.length < 6);
             console.log('[InSim.Mods.loadFile]: file loaded. Mods count: ' + mods.length);
 
             this.mods = mods;
