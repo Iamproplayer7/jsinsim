@@ -1,3 +1,4 @@
+const unicodeToLfs = require('unicode-to-lfs');
 const ezstruct = require('ezstruct');
 ezstruct.setStringEncoding('ASCII');
 
@@ -181,6 +182,9 @@ packets.IS_MTC = (data) => {
     if(data.text === undefined) {
         data.text = '';
     }
+    
+    data.text = data.text.toString();
+    data.text = unicodeToLfs(data.text);
 
     var len = data.text.length + 1;
 
@@ -189,6 +193,8 @@ packets.IS_MTC = (data) => {
 
     data.size = 8 + len;
     data.type = 14;
+
+    
 
     const struct = `
         typedef struct {
@@ -959,6 +965,8 @@ packets.IS_BFN = (data) => {
 
 packets.IS_BTN = (data) => {
     data.text = data.text.toString();
+    data.text = unicodeToLfs(data.text);
+
     var len = data.text.length + 1;
 
 	if (len > 240)
