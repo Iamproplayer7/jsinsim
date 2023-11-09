@@ -10,6 +10,16 @@ class Public {
         return Public.find((server) => server.name === name);
     }
 
+    static message = (server = false, text, sound = 0) =>  {
+        if(server) {
+            return server.message(text, sound);
+        }
+
+        for(const server of Public.all) {
+            server.message(text, sound);
+        }
+    }
+
     constructor(...args) {
         const Server_ = new Server(...args);
         Public.all.push(Server_);
@@ -190,11 +200,11 @@ class Server {
     }
 
     message(text, sound = 0) {
-        Packet.send(this.name, 'IS_MTC', { ucid: 255, text, sound });
+        Packet.send(this, 'IS_MTC', { ucid: 255, text, sound });
     }
     
     command(text) {
-        Packet.send(this.name, 'IS_MST', { text });
+        Packet.send(this, 'IS_MST', { text });
     }
 }
 
