@@ -37,6 +37,10 @@ class Command {
         }
     }
 
+    off(name) {
+        Command.all = Command.all.filter((command) => command.name !== name);
+    }
+
     fire(name, ...args) {
         const commands = Command.all.filter((command) => command.name === name);
         for(const command of commands) {
