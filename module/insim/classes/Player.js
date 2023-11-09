@@ -44,7 +44,7 @@ class Player {
         this.ucid = ucid;
         this.uname = uname;
         this.pname = pname;
-        this.admin = admin;
+        this.adminLFS = admin;
 
         // connection info
         this.userid = 0;
