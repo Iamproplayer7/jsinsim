@@ -192,7 +192,7 @@ Packet.on('IS_BTC', (data) => {
             }
 
             // event
-            Event.fire('Buttons:click', button, player, cflags[data.cflags]);
+            Event.fire('Button:click', button, player, cflags[data.cflags]);
 
             // callback
             if(button.callback) {
@@ -208,7 +208,7 @@ Packet.on('IS_BTT', (data) => {
         const player = Player.getByUCID(data.server, data.ucid);
         if(player) {
             // event
-            Event.fire('Buttons:text', button, player, data.text);
+            Event.fire('Button:text', button, player, data.text);
 
             // callback
             if(button.callback) {
@@ -230,7 +230,7 @@ Packet.on('IS_BFN', (data) => {
         Packet.send(data.server, 'IS_BFN', { subt: 1, ucid: data.ucid });
         
         // event
-        Event.fire('Buttons:shiftI', player);
+        Event.fire('Button:shiftI', player);
     }
 });
 

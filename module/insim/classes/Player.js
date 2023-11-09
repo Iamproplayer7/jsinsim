@@ -13,7 +13,7 @@ class Public {
     }
 
     static getByUName(server, uname) {
-        return Public.all.find((player) => (!server || server === player.server) && player.uname.toLowerCase() === name.toLowerCase());
+        return Public.all.find((player) => (!server || server === player.server) && player.uname.toLowerCase() === uname.toLowerCase());
     }
 
     static deleteByUCID = (server, ucid) => {
