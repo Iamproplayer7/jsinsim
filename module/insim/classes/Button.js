@@ -19,6 +19,13 @@ class Public {
         return button ?? new Button('click', player, name, group, width, height, top, left, '', text, style, inst, callback);
     }
 
+    static input(player, name, group, width, height, top, left, text1, text2, style, callback = false, typeIn = 95) {
+        const button = Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
+        if(button) button.update({ width, height, top, left, text1, text2, style, typeIn });
+
+        return button ?? new Button('input', player, name, group, width, height, top, left, text1, text2, style, 0, callback, typeIn);
+    }
+
     static getByUCID = (server, ucid) => {
         return Public.all.filter((button) => button.valid && server == button.server && button.player.ucid === ucid);
     }
