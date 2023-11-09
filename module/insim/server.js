@@ -20,6 +20,16 @@ class Public {
         }
     }
 
+    static command = (server = false, text) =>  {
+        if(server) {
+            return server.command(text);
+        }
+
+        for(const server of Public.all) {
+            server.command(text);
+        }
+    }
+
     constructor(...args) {
         const Server_ = new Server(...args);
         Public.all.push(Server_);
