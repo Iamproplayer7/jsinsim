@@ -7,56 +7,46 @@
 const InSim = require('../module/insim');
 
 // connect to two hosts
-InSim.Server.start({
-    host1: {
-        ip: '188.122.74.155',
-        port: 53330,
-        admin: 'testas',
-        prefix: '!',
-        pps: 12
-    },
-    host2: {
-        ip: '188.122.74.155',
-        port: 51610,
-        admin: 'testas',
-        prefix: '!',
-        pps: 12
-    }
-}, (hostName) => {
-    // send message to chat when host is connected
-    InSim.Server.message(hostName, '^2InSim: Node.js connected.');
+const Server1 = new InSim.Server('hostName1', '188.122.74.155', 52634, 'test', '!', 12);
+Server1.onConnect(() => {
+    const Server2 = new InSim.Server('hostName2', '188.122.74.155', 52634, 'test', '!', 12);
+    Server2.onConnect(() => {
+        // send message to chat when both hosts are connected
+        Server1.message('^2InSim: Node.js connected.');
+        Server2.message('^2InSim: Node.js connected.');
+    });
 });
 
 // log when player connects to server
-InSim.Events.on('Player:connect', (player) => {
-    console.log(player.uname + ' connected. (' + player.hostName + ')');
+InSim.Event.on('Player:connect', (player) => {
+    console.log(player.uname + ' connected. (' + player.server.name + ')');
 });
 
 // log when player disconnects from server
-InSim.Events.on('Player:disconnect', (player) => {
-    console.log(player.uname + ' disconnected. (' + player.hostName + ')');
+InSim.Event.on('Player:disconnect', (player) => {
+    console.log(player.uname + ' disconnected. (' + player.server.name + ')');
 });
 
-// interval to show every host online count on each host using InSim.Buttons
+// interval to show every server online count on each server using InSim.Button
 setInterval(() => {
     const online = {};
-    // foreach every host
-    InSim.Server.each(host => {
-        online[host.name] = InSim.Players.all(host.name).length;
-    });
+    // loop every server
+    for(const server of InSim.Server.all) {
+        online[server.name] = InSim.Player.all.filter((player) => player.server === server).length;
+    }
 
-    // foreach every player
-    InSim.Players.each((player) => {
+    // loop every player
+    for(const player of InSim.Player.all) {
         // send button
-        InSim.Buttons.createSimple(player, 'TITLE', 'ONLINE', 20, 7, 70, 90, '^2ONLINE', 32);
+        InSim.Button.simple(player, 'TITLE', 'ONLINE', 20, 7, 70, 90, '^2ONLINE', 32);
                 
         var top = 70+7;
-        for(const hostName of Object.keys(online)) {
-            const count = online[hostName];
+        for(const key of Object.keys(online)) {
+            const value = online[key];
             
             // send button
-            InSim.Buttons.createSimple(player, hostName, 'MAIN', 20, 5, top, 90, '^7' + hostName + ': ^2' + count, 32);
+            InSim.Button.simple(player, key, 'MAIN', 20, 5, top, 90, '^7' + key + ': ^2' + value, 32);
             top += 5;
         }
-    });
+    }
 }, 1000);
