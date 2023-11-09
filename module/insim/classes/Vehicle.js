@@ -110,7 +110,7 @@ Packet.on(['IS_PLL', 'IS_PLP'], (data) => {
 });
 
 Packet.on('IS_CRS', (data) => {
-    const vehicle = this.getByPLID(data.server, data.plid);
+    const vehicle = Public.getByPLID(data.server, data.plid);
     if(vehicle) {
         const ins = { date: Date.now(), pos: vehicle.pos };
         vehicle.resets.push(ins);
