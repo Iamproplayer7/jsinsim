@@ -8,6 +8,7 @@ const Packet = require('./classes/Packet.js');
 const Event = require('./classes/Event.js');
 const Command = require('./classes/Command.js');
 const Interval = require('./classes/Interval.js');
+const Object = require('./classes/Object.js');
 
 module.exports = {
     Server,
@@ -17,5 +18,6 @@ module.exports = {
     Packet,
     Event,
     Command,
-    Interval
+    Interval,
+    Object
 }
