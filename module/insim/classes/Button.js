@@ -30,16 +30,35 @@ class Public {
         return Public.all.filter((button) => button.valid && server == button.server && button.player.ucid === ucid);
     }
 
+    static getByPlayer = (player) => {
+        return Public.getByUCID(player.server, player.ucid);
+    }
+
     static getByUCIDNameGroup = (server, ucid, name, group) => {
         return Public.all.find((button) => button.valid && server == button.server && button.player.ucid === ucid && button.name === name && button.group === group);
+    }
+
+    static getByPlayerNameGroup = (player, name, group) => {
+        return Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
     }
 
     static getByUCIDGroup = (server, ucid, group) => {
         return Public.all.filter((button) => button.valid && server == button.server && button.player.ucid === ucid && button.group === group);
     }
 
+    static getByPlayerGroup = (player, group) => {
+        return Public.getByUCIDGroup(player.server, player.ucid, group);
+    }
+
     static getByUCIDClickId = (server, ucid, clickId) => {
         return Public.all.find((button) => button.valid && server == button.server && button.player.ucid === ucid && button.clickId === clickId);
+    }
+
+    static update = (player, name, group, data) => {
+        const button = Public.getByPlayerNameGroup(player, name, group);
+        if(button) {
+            button.update(data);
+        }
     }
 
     static delete = (player, name, group) => {
