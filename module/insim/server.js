@@ -1,209 +1,201 @@
 const net = require('net');
-const fs = require('fs'); 
-const ini = require('ini');
 const BufferList = require('bufferlist');
 
-const packetsDecoder = require('../decoders/packets.js');
-const Packets = require('./classes/packets.js');
+const Decoder = require('../decoders/packets.js');
+const Packet = require('./classes/Packet.js');
 
-class ServerHandler {
-    constructor() {
+class Public {
+    static all = [];
+    static getByName = (name) => {
+        return Public.find((server) => server.name === name);
+    }
+
+    constructor(...args) {
+        const Server_ = new Server(...args);
+        Public.all.push(Server_);
+
+        return Server_;
+    }
+}
+
+class Server {
+    constructor(name, ip, port, admin, prefix = '!', pps = 12) {
+        this.name = name;
+        this.ip = ip;
+        this.port = port;
+        this.admin = admin;
+        this.prefix = prefix;
+        this.pps = pps;
+
+        // server connection
         this.callback = false;
-        this.hosts = {};
+        this.buffer = new BufferList;
+        this.client = false;
         this.intervals = {};
+        this.connected = false;
+
+        this.connect();
     }
 
-    start(hosts, callback = false) {
+    onConnect(callback) {
         this.callback = callback;
-
-        for(const hostName of Object.keys(hosts)) {
-            this.hosts[hostName] = {
-                name: hostName, // host name
-                ip: hosts[hostName].ip, // server ip
-                port: hosts[hostName].port, // server port
-                admin: hosts[hostName].admin, // server admin password
-                prefix: hosts[hostName].prefix, // command prefix
-                pps: hosts[hostName].pps, // NLP/MCI packets per second
-
-                buffer: new BufferList, // buffer to save incoming packets
-                client: false, // net client
-                intervals: {},
-                connected: false, // connection state
-            }
-
-            // init connection
-            this.connect(this.hosts[hostName]);
-        }
     }
 
-    connect(host) {
-        console.log('[' + host.name + '] Connecting to ' + host.ip + ':' + host.port);
+    connect() {
+        console.log('[' + this.name + '] Connecting to ' + this.ip + ':' + this.port);
 
-        host.client = net.connect(host.port, host.ip);
-        host.client.on('connect', () => {
-            this.sendPacket(host, 'IS_ISI', { 
+        this.client = net.connect(this.port, this.ip);
+        this.client.on('connect', () => {
+            this.sendPacket('IS_ISI', { 
                 reqi: 1,
                 udpport: 0,
                 flags: 2043+2048, // all flags for InSim 9
-                prefix: host.prefix.charCodeAt(0),
-                interval: 1000/host.pps,
-                admin: host.admin,
-                iname: '9',
+                prefix: this.prefix.charCodeAt(0),
+                interval: 1000/this.pps,
+                admin: this.admin,
+                iname: this.name,
                 insimver: 9
             });
 
-            this.sendPacket(host, 'IS_MAL_PACK', { mods: ['000000'] }); // allow all mods
+            this.sendPacket('IS_MAL_PACK', { mods: ['000000'] }); // allow all mods
 
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 6 }); // send camera pos
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 7 }); // send state info
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 8 }); // get time in hundredths
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 10 }); // get multiplayer info
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 13 }); // get NCN for all connections
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 14 }); // get all players
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 15 }); // get all results
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 16 }); // send an IS_NLP
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 17 }); // send an IS_MCI
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 18 }); // send an IS_REO
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 19 }); // send an IS_RST
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 20 }); // send an IS_AXI - AutoX Info
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 22 }); // send an IS_RIP - Replay Information Packet
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 23 }); // get NCI for all guests
-            this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 25 }); // send IS_AXM packets for the entire layout
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 6 }); // send camera pos
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 7 }); // send state info
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 8 }); // get time in hundredths
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 10 }); // get multiplayer info
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 13 }); // get NCN for all connections
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 14 }); // get all players
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 15 }); // get all results
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 16 }); // send an IS_NLP
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 17 }); // send an IS_MCI
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 18 }); // send an IS_REO
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 19 }); // send an IS_RST
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 20 }); // send an IS_AXI - AutoX Info
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 22 }); // send an IS_RIP - Replay Information Packet
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 23 }); // get NCI for all guests
+            this.sendPacket('IS_TINY', { reqi: 1, subt: 25 }); // send IS_AXM packets for the entire layout
             
             // this packet will maintain the connection
-            host.intervals.IS_TINY = setInterval(() => {
-                this.sendPacket(host, 'IS_TINY', { reqi: 1, subt: 0 });
+            this.intervals.IS_TINY = setInterval(() => {
+                this.sendPacket('IS_TINY', { reqi: 1, subt: 0 });
             }, 1000);
         });
 
-        host.client.on('data', (data) => {
-            host.buffer.push(data);
+        this.client.on('data', (data) => {
+            this.buffer.push(data);
 
-            var size = this.peekByte(host);
-            while ((host.buffer.length > 0) && (size <= host.buffer.length)){
+            var size = this.peekByte();
+            while ((this.buffer.length > 0) && (size <= this.buffer.length)){
                 if(size > 0) {
-                    this.decodePacket(host, host.buffer.take(size));
-                    host.buffer.advance(size); 
+                    this.decodePacket(this.buffer.take(size));
+                    this.buffer.advance(size); 
                 }
 
                 // next packet size
-                size = this.peekByte(host);
+                size = this.peekByte();
             }
         });
 
-        host.client.on('close', () => {
-            console.log('[' + host.name + '] Disconnected.');
-            this.disconnect(host);
+        this.client.on('close', () => {
+            console.log('[' + this.name + '] Disconnected.');
+            this.disconnect();
         });
 
-        host.client.on('error', (err) => {
-            console.log('[' + host.name + '] Error: ' + err.code);
-            this.disconnect(host);
+        this.client.on('error', (err) => {
+            console.log('[' + this.name + '] Error: ' + err.code);
+            this.disconnect();
         });
     }
 
-    disconnect(host) {
-        for(const interval of Object.keys(host.intervals)) {
-            clearInterval(interval);
-            delete host.intervals[interval];
+    disconnect() {
+        for(const key of Object.keys(this.intervals)) {
+            this.clearInterval(key);
         }
 
         // end client
-        if(host.client) {
-            host.client.end();
-            host.client = false;
+        if(this.client) {
+            this.client.end();
+            this.client = false;
         }
     }
 
-    // this function for decoding packets
-    peekByte(host, offset) {
+    peekByte(offset) {
 		offset = offset || 0;
-		return offset >= host.buffer.length ? 0 : host.buffer.take(1).readUInt8(offset)*4;
+		return offset >= this.buffer.length ? 0 : this.buffer.take(1).readUInt8(offset)*4;
     }
 
-    sendPacket(host, name, data) {
-        if(!host.client) return;
+    sendPacket(name, data) {
+        if(!this.client) return;
 
-        const packetEncoded = packetsDecoder.getPacketBuffered(name, data);
-        if(packetEncoded) {
-            host.client.write(packetEncoded);
+        const encoded = Decoder.getPacketBuffered(name, data);
+        if(encoded) {
+            this.client.write(encoded);
         }
     }
 
-    decodePacket(host, data) {
-        if(!host.client) return;
+    decodePacket(data) {
+        if(!this.client) return;
 
         const packetId = data.readUInt8(1);
-        const packetName = packetsDecoder.getById(packetId);
+        const packetName = Decoder.getById(packetId);
         if(!packetName) {
-            return console.log('[packet] not decoded! (ID: ' + packetId + ')');
+            return console.log('[Packet] Failed to decode! (ID: ' + packetId + ')');
         }
 
-        // if host response it means host is connected
-        if(!host.connected) {
-            host.connected = true;
-            console.log('[' + host.name + '] Connected.');
+        // if host responses it means host is already connected
+        if(!this.connected) {
+            this.connected = true;
+            console.log('[' + this.name + '] Connected.');
 
             if(this.callback) {
-                this.callback(host.name);
+                this.callback();
             }
         }
 
         // decode packet
-        var packetDecoded = packetsDecoder.getPacketBuffered(packetName, data);
-        if(packetDecoded) {
-            packetDecoded = { hostName: host.name, ...packetDecoded };
+        var decoded = Decoder.getPacketBuffered(packetName, data);
+        if(decoded) {
+            decoded = { server: this, ...decoded };
 
             // remove nulltermdstr
-            for(const key of Object.keys(packetDecoded)) {
-                const value = packetDecoded[key];
+            for(const key of Object.keys(decoded)) {
+                const value = decoded[key];
                 if(typeof value == 'string' && value.length > 0) {
-                    const indexOfNull = value.indexOf('\0');
-                    if(indexOfNull !== -1) {
-                        packetDecoded[key] = value.substr(0, indexOfNull);
+                    const indexOf = value.indexOf('\0');
+                    if(indexOf !== -1) {
+                        decoded[key] = value.slice(0, indexOf);
                     }
                 }
             }
-
-            // fire packet handler
-            Packets.fire(packetName, packetDecoded);
+            
+            Packet.fire(packetName, decoded);
         }
     }
 
-    /* functions */
-    getHostByName(hostName) {
-        const host = this.hosts[hostName];
-        return host === undefined ? false : host;
+    // intervals
+    setInterval(name, callback, ms) {
+        if(this.intervals[name]) {
+            return console.log('[Interval] Failed to create! (Interval ' + name + ' already exists)');
+        }
+
+        this.intervals[name] = setInterval(callback, ms);
     }
 
-    each(callback) {
-        for(const hostName of Object.keys(this.hosts)) {
-            const host = this.hosts[hostName];
-            callback(host);
+    clearInterval(name) {
+        const interval = this.intervals[name];
+        if(interval) {
+            clearInterval(interval);
+            delete this.intervals[name];
         }
+    }
+
+    message(text, sound = 0) {
+        Packet.send(this.name, 'IS_MTC', { ucid: 255, text, sound });
     }
     
-    message(hostName = false, text, sound = 0) {
-        if(hostName) {
-            Packets.send(hostName, 'IS_MTC', { ucid: 255, text: text, sound: sound });
-        }
-        else {
-            for(const hostName_ of Object.keys(this.hosts)) {
-                Packets.send(hostName_, 'IS_MTC', { ucid: 255, text: text, sound: sound });
-            }
-        }
-    }
-
-    command(hostName = false, command) {
-        if(hostName) {
-            Packets.send(hostName, 'IS_MST', { text: command });
-        }
-        else {
-            for(const hostName_ of Object.keys(this.hosts)) {
-                Packets.send(hostName_, 'IS_MST', { text: command });
-            }
-        }
+    command(text) {
+        Packet.send(this.name, 'IS_MST', { text });
     }
 }
 
-module.exports = new ServerHandler();
+module.exports = Public;

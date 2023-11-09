@@ -1,18 +1,19 @@
-// load InSim.Server
 const Server = require('./server.js'); 
 
-// load all classes.
-const Packets = require('./classes/packets.js');
-Packets.Server = Server; 
-// this required because we can't import Packets into Server and Server into Packets
-// i'm setting variable for it to avoid this error.
+// classes
+const Player = require('./classes/Player.js');
+const Vehicle = require('./classes/Vehicle.js');
+const Button = require('./classes/Button.js');
+const Packet = require('./classes/Packet.js');
+const Event = require('./classes/Event.js');
+const Command = require('./classes/Command.js');
 
-const Events = require('./classes/events.js');
-const Players = require('./classes/players.js');
-const Vehicles = require('./classes/vehicles.js');
-const Commands = require('./classes/commands.js');
-const Buttons = require('./classes/buttons.js');
-const Mods = require('./classes/mods.js');
-const Objects = require('./classes/objects.js');
-
-module.exports = { Server, Packets, Events, Players, Vehicles, Commands, Buttons, Mods, Objects };
+module.exports = {
+    Server,
+    Player,
+    Vehicle,
+    Button,
+    Packet,
+    Event,
+    Command
+}
