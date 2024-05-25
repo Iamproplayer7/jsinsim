@@ -1,6 +1,10 @@
 const Packet = require('./Packet.js');
 const Event = require('./Event.js');
 
+function parseHrtimeToSeconds(hrtime) {
+    return parseFloat((hrtime[0] + (hrtime[1] / 1e9)));
+}
+
 class Public {
     static all = [];
 
@@ -16,7 +20,7 @@ class Public {
         return Public.all.find((player) => (!server || server === player.server) && player.uname.toLowerCase() === uname.toLowerCase());
     }
 
-    static deleteByUCID = (server, ucid) => {
+    static deleteByUCID(server, ucid) {
         var deleted = false;
 
         const player = Public.getByUCID(server, ucid);
@@ -52,7 +56,7 @@ class Player {
         this.ip = '';
 
         // intervals
-        this.intervals = {};
+        this.intervals = [];
 
         // vehicle
         this.vehicle = null;
@@ -96,21 +100,55 @@ class Player {
 
     // intervals
     setInterval(name, callback, ms) {
-        if(this.intervals[name]) {
-            return console.log('[Player Interval] Failed to create! (Interval ' + name + ' already exists)');
+        const interval = this.intervals.find(interval => interval.name === name);
+        if(interval) {
+            return console.log('[Player Interval] Failed to create! (Interval ' + interval.name + ' already exists)');
         }
 
-        this.intervals[name] = setInterval(() => {
+        this.intervals.push({ name, id: setInterval(() => {
             if(!this.valid) return this.clearInterval(name);
+            
+            const startTime = process.hrtime();
             callback();
-        }, ms);
+            const endTime = process.hrtime(startTime);
+            
+            const int = this.intervals.find((interval) => name === interval.name);
+            if(int) {
+                const catched = parseHrtimeToSeconds(endTime);
+
+                int.performance.any = true;
+
+                // last
+                int.performance.last = catched;
+
+                // avg
+                int.performance.avg.time += catched;
+                int.performance.avg.times++;
+
+                // max
+                if(catched > int.performance.max) {
+                    int.performance.max = catched;
+                }
+
+                // min
+                if(catched < int.performance.min || int.performance.min === 0) {
+                    int.performance.min = catched;
+                }
+            }
+        }, ms), performance: {
+            any: false,
+            ms: ms,
+            last: 0, 
+            avg: { times: 0, time: 0 },
+            min: 0, max: 0,
+        } });
     }
 
     clearInterval(name) {
-        const interval = this.intervals[name];
+        const interval = this.intervals.find(interval_ => interval_ !== undefined && interval_.name === name);
         if(interval) {
-            clearInterval(interval);
-            delete this.intervals[name];
+            clearInterval(interval.id);
+            this.intervals = this.intervals.filter((interval_) => interval_ !== interval);
         }
     }
 }

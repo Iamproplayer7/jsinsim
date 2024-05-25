@@ -5,70 +5,70 @@ const Player = require('./Player.js');
 class Public {
     static all = [];
 
-    static simple(player, name, group, width, height, top, left, text, style) {
+    static simple(player, name, group, width, height, top, left, text, style, inst = false) {
         const button = Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
         if(button) button.update({ width, height, top, left, text2: text, style });
 
-        return button ?? new Button('simple', player, name, group, width, height, top, left, '', text, style);
+        return button ?? new Button('simple', player, name, group, width, height, top, left, '', text, style, false, inst);
     }
 
-    static click(player, name, group, width, height, top, left, text, style, inst = false, callback = false) {
+    static click(player, name, group, width, height, top, left, text, style, callback = false, inst = false) {
         const button = Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
         if(button) button.update({ width, height, top, left, text2: text, style, inst });
 
-        return button ?? new Button('click', player, name, group, width, height, top, left, '', text, style, inst, callback);
+        return button ?? new Button('click', player, name, group, width, height, top, left, '', text, style, callback, inst);
     }
 
     static input(player, name, group, width, height, top, left, text1, text2, style, callback = false, typeIn = 95) {
         const button = Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
         if(button) button.update({ width, height, top, left, text1, text2, style, typeIn });
 
-        return button ?? new Button('input', player, name, group, width, height, top, left, text1, text2, style, 0, callback, typeIn);
+        return button ?? new Button('input', player, name, group, width, height, top, left, text1, text2, style, callback, false, typeIn);
     }
 
-    static getByUCID = (server, ucid) => {
+    static getByUCID(server, ucid) {
         return Public.all.filter((button) => button.valid && server == button.server && button.player.ucid === ucid);
     }
 
-    static getByPlayer = (player) => {
+    static getByPlayer(player) {
         return Public.getByUCID(player.server, player.ucid);
     }
 
-    static getByUCIDNameGroup = (server, ucid, name, group) => {
+    static getByUCIDNameGroup(server, ucid, name, group) {
         return Public.all.find((button) => button.valid && server == button.server && button.player.ucid === ucid && button.name === name && button.group === group);
     }
 
-    static getByPlayerNameGroup = (player, name, group) => {
+    static getByPlayerNameGroup(player, name, group) {
         return Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
     }
 
-    static getByUCIDGroup = (server, ucid, group) => {
+    static getByUCIDGroup(server, ucid, group) {
         return Public.all.filter((button) => button.valid && server == button.server && button.player.ucid === ucid && button.group === group);
     }
 
-    static getByPlayerGroup = (player, group) => {
+    static getByPlayerGroup(player, group) {
         return Public.getByUCIDGroup(player.server, player.ucid, group);
     }
 
-    static getByUCIDClickId = (server, ucid, clickId) => {
+    static getByUCIDClickId(server, ucid, clickId) {
         return Public.all.find((button) => button.valid && server == button.server && button.player.ucid === ucid && button.clickId === clickId);
     }
 
-    static update = (player, name, group, data) => {
+    static update(player, name, group, data) {
         const button = Public.getByPlayerNameGroup(player, name, group);
         if(button) {
             button.update(data);
         }
     }
 
-    static delete = (player, name, group) => {
+    static delete(player, name, group) {
         const button = Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
         if(button) {
             button.delete();
         }
     }
 
-    static deleteGroup = (player, group) => {
+    static deleteGroup(player, group) {
         const buttons = Public.getByUCIDGroup(player.server, player.ucid, group);
         for(const button of buttons) {
             button.delete();
@@ -77,7 +77,7 @@ class Public {
 }
 
 class Button {
-    constructor(type, player, name, group, width, height, top, left, text1, text2, style, inst, callback = false, typeIn = 0) {
+    constructor(type, player, name, group, width, height, top, left, text1, text2, style, callback = false, inst = false, typeIn = 0) {
         // remove last active
         const button = Public.getByUCIDNameGroup(player.server, player.ucid, name, group);
         if(button) button.delete();
@@ -211,11 +211,11 @@ Packet.on('IS_BTC', (data) => {
             }
 
             // event
-            Event.fire('Button:click', button, player, cflags[data.cflags]);
+            Event.fire('Button:click', player, button, cflags[data.cflags]);
 
             // callback
             if(button.callback) {
-                button.callback(button, player, cflags[data.cflags]);
+                button.callback(button, cflags[data.cflags]);
             }
         }
     }
@@ -227,11 +227,11 @@ Packet.on('IS_BTT', (data) => {
         const player = Player.getByUCID(data.server, data.ucid);
         if(player) {
             // event
-            Event.fire('Button:text', button, player, data.text);
+            Event.fire('Button:text', player, button, data.text);
 
             // callback
             if(button.callback) {
-                button.callback(button, player, data.text);
+                button.callback(button, data.text);
             }
         }
     }

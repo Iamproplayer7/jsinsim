@@ -11,7 +11,7 @@ class Object {
     }
 
     // private sendArray
-    static #sendArray = (server, action, objects) => {
+    static #sendArray (server, action, objects) {
         if(objects.length < 1) return;
         if(objects.length > 60) {
             const parts = Math.floor(objects.length / 60);
@@ -32,7 +32,7 @@ class Object {
         }
     }
 
-    static add = (server, objects) => {
+    static add(server, objects) {
         if(Array.isArray(objects)) {
             this.#sendArray(server, 1, objects);
         }
@@ -41,7 +41,7 @@ class Object {
         }
     }
 
-    static addAsync = (server, objects) => {
+    static addAsync(server, objects) {
         return new Promise((resolve) => {
             var i = setInterval(() => {
                 var loaded = 0;
@@ -63,7 +63,7 @@ class Object {
         });
     }
 
-    static remove = (server, objects) => {
+    static remove(server, objects) {
         if(Array.isArray(objects)) {
             this.#sendArray(server, 2, objects);
         }
@@ -72,11 +72,19 @@ class Object {
         }
     }
 
-    static removeAsync = (server, objects) => {
+    static removeAsync(server, objects) {
         return new Promise((resolve) => {
             var i = setInterval(() => {
-                const before = Object.all.filter((object) => object.server === server).length;
-                if(before-objects.length === Object.all.filter((object) => object.server === server).length) {
+                var removed = 0;
+                for(const object of Object.all) {
+                    for(const objectToRemove of objects) {
+                        if(object.x === objectToRemove.x && object.y === objectToRemove.y) {
+                            removed++;
+                        }
+                    }
+                }
+
+                if(removed === objects.length) {
                     clearInterval(i);
                     return resolve(true);
                 }
@@ -86,7 +94,7 @@ class Object {
         });
     }
 
-    static move = (server, object1, object2) => {
+    static move(server, object1, object2) {
         this.#send(server, 2, object1);
         this.#send(server, 1, object2);
     }

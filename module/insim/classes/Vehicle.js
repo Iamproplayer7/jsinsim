@@ -5,7 +5,7 @@ const Player = require('./Player.js');
 class Public {
     static all = [];
 
-    static getByPLID = (server, plid) => {
+    static getByPLID(server, plid) {
         return Public.all.find((vehicle) => server == vehicle.server && vehicle.plid == plid);
     }
 
@@ -13,13 +13,14 @@ class Public {
         return Public.all.find((vehicle) => server === vehicle.server && vehicle[key] === value);
     }
 
-    static deleteByPLID = (server, plid) => {
+    static deleteByPLID(server, plid) {
         var deleted = false;
 
         const vehicle = Public.getByPLID(server, plid);
         if(vehicle) {
             deleted = true;
             vehicle.valid = false;
+            vehicle.player.vehicle = false;
             Public.all = Public.all.filter((vehicle_) => vehicle_ !== vehicle);
         }
         
@@ -33,7 +34,9 @@ class Vehicle {
         this.valid = true;
         this.server = server;
         this.player = player;
-        this.player.vehicle = this;
+
+        // add vehicle to player
+        player.vehicle = this;
 
         this.plid = plid;
         this.plate = plate;
@@ -94,19 +97,22 @@ Packet.on('IS_NPL', (data) => {
         }
         else {
             // event
-            Event.fire('Vehicle:add', new Vehicle(player.server, player, data.plid, data.plate, data.cname, data.sname, data.hmass, data.htres, data.config, data.fuel, data.isOfficial));
+            Event.fire('Vehicle:add', new Vehicle(player.server, player, data.plid, data.plate, data.cname, data.sname, data.hmass, data.htres, data.config, data.fuel, data.isOfficial), player);
         }
     }
 });
 
 Packet.on(['IS_PLL', 'IS_PLP'], (data) => {
     const vehicle = Public.getByPLID(data.server, data.plid);
-    const deleted = Public.deleteByPLID(data.server, data.plid);
-
-    if(deleted) {
-        // event
-        Event.fire('Vehicle:remove', vehicle);
-    }    
+    if(vehicle) {
+        const player = vehicle.player;
+        const deleted = Public.deleteByPLID(data.server, data.plid);
+    
+        if(deleted) {
+            // event
+            Event.fire('Vehicle:remove', vehicle, player);
+        }    
+    }
 });
 
 Packet.on('IS_CRS', (data) => {
@@ -121,7 +127,7 @@ Packet.on('IS_CRS', (data) => {
 });
 
 Packet.on('IS_CPR', (data) => {
-    const player = Public.getByUCID(data.server, data.ucid);
+    const player = Player.getByUCID(data.server, data.ucid);
     if(player) {
         if(player.vehicle && player.vehicle.plate !== data.plate) {
             // event

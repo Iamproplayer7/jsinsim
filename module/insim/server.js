@@ -96,7 +96,7 @@ class Server {
             this.sendPacket('IS_TINY', { reqi: 1, subt: 25 }); // send IS_AXM packets for the entire layout
             
             // this packet will maintain the connection
-            this.intervals.IS_TINY = setInterval(() => {
+            this.setInterval('IS_TINY', () => {
                 this.sendPacket('IS_TINY', { reqi: 1, subt: 0 });
             }, 1000);
         });

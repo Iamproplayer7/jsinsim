@@ -1,24 +1,24 @@
 class Event {
     static all = [];
 
-    on(name, callback) {
+    static on(name, callback, topPriority = false) {
         if(Array.isArray(name)) {
             for(const key of name) {
-                Event.all.push({ name: key, callback });
+                Event.all.push({ name: key, callback, topPriority });
             }
         }
         else {
-            Event.all.push({ name, callback });
+            Event.all.push({ name, callback, topPriority });
         }
     }
 
-    off(name) {
+    static off(name) {
         Event.all = Event.all.filter((event) => event.name !== name);
     }
 
-    fire(name, ...args) {
+    static fire(name, ...args) {
         var response = [];
-        const events = Event.all.filter((event) => event.name === name);
+        const events = Event.all.filter((event) => event.name === name).sort((a, b) => Number(b.topPriority) - Number(a.topPriority));
         for(const event of events) {
             response.push(event.callback(...args));
         }
@@ -27,4 +27,4 @@ class Event {
     }
 }
 
-module.exports = new Event;
+module.exports = Event;
